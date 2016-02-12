@@ -7,8 +7,7 @@ from netaddr import IPNetwork, IPAddress
 
 def int_to_ipv4(addr):
     return "%d.%d.%d.%d" % \
-           (addr >> 24 & 0xff, addr >> 16 & 0xff, \
-            addr >> 8 & 0xff, addr & 0xff)
+           (addr >> 24 & 0xff, addr >> 16 & 0xff, addr >> 8 & 0xff, addr & 0xff)
 
 
 def getNetFlowData(data):

@@ -15,7 +15,7 @@ def IPfromOctetString(t, s):
 
 
 def main():
-    mib.path(mib.path() + ":/usr/share/mibs/cisco")
+    mib.path(mib.path() + ":/usr/local/Cellar/libsmi/0.4.8/share/mibs/cisco")
     load("SNMPv2-MIB")
     load("IF-MIB")
     load("IP-MIB")
