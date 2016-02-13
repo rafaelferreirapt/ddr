@@ -9,7 +9,7 @@ import argparse
 import pydevd
 
 
-def IPfromOctetString(t, s):
+def ip_from_octet_string(t, s):
     if t == 1 or t == 3:  # IPv4 global, non-global
         return '.'.join(['%d' % ord(x) for x in s])
     elif t == 2 or t == 4:  # IPv6 global, non-global
@@ -18,7 +18,7 @@ def IPfromOctetString(t, s):
 
 
 def main():
-    pydevd.settrace('10.0.1.100', port=5678, stdoutToServer=True, stderrToServer=True)
+    # pydevd.settrace('10.0.1.100', port=5678, stdoutToServer=True, stderrToServer=True)
 
     mib.path(mib.path() + ":/usr/share/mibs/cisco")
     load("SNMPv2-MIB")
@@ -43,24 +43,20 @@ def main():
 
     print(m.sysDescr)  # Gets sysDescr from SNMPv2-MIB
 
-    print("===")
+    print("##################")
 
     # print(m.ifDescr.items()) #Lists (order, name) interfaces in ifDescr from IF-MIB
 
     for i, name in m.ifDescr.items():
         print("Interface order %d: %s" % (i, name))
 
-    print("===")
+    print("##################")
 
-    # print(m.ipAddressIfIndex.items()) #Lists ((adr.type,adr),order) interfaces in ipAddressIfIndex from IP-MIB
-
-    ifWithAddr = {}  # Stores (order, first adr.) of all interfaces
+    ifWithAddr = {}  # Stores the interfaces with IP address
     for addr, i in m.ipAddressIfIndex.items():
-        if not i in ifWithAddr:
-            ifWithAddr.update({i: IPfromOctetString(addr[0], addr[1])})
-        print('%s, Interface order: %d, %s' % (IPfromOctetString(addr[0], addr[1]), i, m.ifDescr[i]))
-
-    # print(ifWithAddr)
+        if i not in ifWithAddr:
+            ifWithAddr.update({i: ip_from_octet_string(addr[0], addr[1])})
+        print('%s, Interface order: %d, %s' % (ip_from_octet_string(addr[0], addr[1]), i, m.ifDescr[i]))
 
     # print dir(m)
     # print type(m)
@@ -68,12 +64,17 @@ def main():
 
     t = 0
     try:
+        ifOutUCastPkts = {}
+        ifInUCastPkts = {}
+        ifOutOctets = {}
+        ifInOctets = {}
+        ifQstats = {}
 
         while True:
             print("=== %d Seconds passed ===" % t)
 
-            # ifHCOutUcastPkts
             """
+            # ifHCOutUcastPkts
             The total number of packets that higher-level protocols
             requested be transmitted, and which were not addressed to a
             multicast or broadcast address at this sub-layer, including
@@ -85,14 +86,14 @@ def main():
             times as indicated by the value of
             ifCounterDiscontinuityTime."
             """
-            ifOutUCastPkts = {}  # Stores (order, first adr.) of all interfaces
+            print("### ifOutUCastPkts")
+            ifOutUCastPkts[t] = {}
+
             for i, pkts in m.ifHCOutUcastPkts.items():
                 if i in ifWithAddr.keys():
-                    if not i in ifOutUCastPkts:
-                        ifOutUCastPkts.update({i: pkts})
+                    if i not in ifOutUCastPkts[t]:
+                        ifOutUCastPkts[t].update({i: pkts})
                     print('%s, Interface Out packets: %d' % (m.ifDescr[i], pkts))
-
-            print("===")
 
             """
             The number of packets, delivered by this sub-layer to a
@@ -105,14 +106,14 @@ def main():
             times as indicated by the value of
             ifCounterDiscontinuityTime.
             """
-            ifInUCastPkts = {}  # Stores (order, first adr.) of all interfaces
+            print("### ifInUCastPkts")
+            ifInUCastPkts[t] = {}
+
             for i, pkts in m.ifHCInUcastPkts.items():
                 if i in ifWithAddr.keys():
-                    if not i in ifInUCastPkts:
-                        ifInUCastPkts.update({i: pkts})
+                    if i not in ifInUCastPkts[t]:
+                        ifInUCastPkts[t].update({i: pkts})
                     print('%s, Interface In packets: %d' % (m.ifDescr[i], pkts))
-
-            print("===")
 
             """
             The total number of octets transmitted out of the
@@ -124,14 +125,14 @@ def main():
             times as indicated by the value of
             ifCounterDiscontinuityTime.
             """
-            ifOutOctets = {}  # Stores (order, first adr.) of all interfaces
+            print("### ifOutOctets")
+            ifOutOctets[t] = {}
+
             for i, pkts in m.ifHCOutOctets.items():
                 if i in ifWithAddr.keys():
-                    if not i in ifOutOctets:
-                        ifOutOctets.update({i: pkts})
+                    if i not in ifOutOctets[t]:
+                        ifOutOctets[t].update({i: pkts})
                     print('%s, Interface Out octets: %d' % (m.ifDescr[i], pkts))
-
-            print("===")
 
             """
             The total number of octets received on the interface,
@@ -143,26 +144,26 @@ def main():
             times as indicated by the value of
             ifCounterDiscontinuityTime.
             """
-            ifInOctets = {}  # Stores (order, first adr.) of all interfaces
+            print("### ifInOctets")
+            ifInOctets[t] = {}
+
             for i, pkts in m.ifHCInOctets.items():
                 if i in ifWithAddr.keys():
-                    if not i in ifInOctets:
-                        ifInOctets.update({i: pkts})
+                    if i not in ifInOctets[t]:
+                        ifInOctets[t].update({i: pkts})
                     print('%s, Interface In octets: %d' % (m.ifDescr[i], pkts))
-
-            print("===")
 
             """
             The number of messages in the sub-queue.
             """
-            ifQstats = {}  # Stores (order, first adr.) of all interfaces
+            print("### ifQstats")
+            ifQstats[t] = {}
+
             for (i, u), pkts in m.cQStatsDepth.items():
                 if i in ifWithAddr.keys():
-                    if not i in ifQstats:
-                        ifQstats.update({i: pkts})
+                    if i not in ifQstats[t]:
+                        ifQstats[t].update({i: pkts})
                     print('%s, Interface Queue Size: %d' % (m.ifDescr[i], pkts))
-
-            print("===")
 
             time.sleep(args.sinterval)
             t += args.sinterval
@@ -183,7 +184,6 @@ class Logger(object):
 
     def close(self):
         self.log.close()
-
 
 if __name__ == "__main__":
     main()
