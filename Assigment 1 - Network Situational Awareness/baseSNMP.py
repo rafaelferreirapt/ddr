@@ -1,12 +1,12 @@
 from snimpy import mib
 import time
-import sys
+import json
 
 from snimpy.manager import Manager as M
 from snimpy.manager import load
 import re
 import argparse
-import pydevd
+import matplotlib.pyplot as plt
 
 
 def ip_from_octet_string(t, s):
@@ -18,8 +18,6 @@ def ip_from_octet_string(t, s):
 
 
 def main():
-    # pydevd.settrace('10.0.1.100', port=5678, stdoutToServer=True, stderrToServer=True)
-
     mib.path(mib.path() + ":/usr/share/mibs/cisco")
     load("SNMPv2-MIB")
     load("IF-MIB")
@@ -32,10 +30,6 @@ def main():
     parser.add_argument('-r', '--router', nargs='?', required=True, help='address of router to monitor')
     parser.add_argument('-s', '--sinterval', type=int, help='sampling interval (seconds)', default=5)
     args = parser.parse_args()
-
-    sys.stdout = Logger("router_" + args.router)
-
-    print(args)
 
     # Creates SNMP manager for router with address args.router
     m = M(args.router, 'private', 3, secname='uDDR', authprotocol="MD5", authpassword="authpass", privprotocol="AES",
@@ -55,7 +49,7 @@ def main():
     ifWithAddr = {}  # Stores the interfaces with IP address
     for addr, i in m.ipAddressIfIndex.items():
         if i not in ifWithAddr:
-            ifWithAddr.update({i: ip_from_octet_string(addr[0], addr[1])})
+            ifWithAddr.update({i: {"ip": ip_from_octet_string(addr[0], addr[1]), "name": m.ifDescr[i]}})
         print('%s, Interface order: %d, %s' % (ip_from_octet_string(addr[0], addr[1]), i, m.ifDescr[i]))
 
     # print dir(m)
@@ -63,15 +57,16 @@ def main():
     # exit()
 
     t = 0
+    ifOutUCastPkts = {}
+    ifInUCastPkts = {}
+    ifOutOctets = {}
+    ifInOctets = {}
+    ifQstats = {}
+
     try:
-        ifOutUCastPkts = {}
-        ifInUCastPkts = {}
-        ifOutOctets = {}
-        ifInOctets = {}
-        ifQstats = {}
 
         while True:
-            print("=== %d Seconds passed ===" % t)
+            print("\n=== %d Seconds passed ===" % t)
 
             """
             # ifHCOutUcastPkts
@@ -86,7 +81,7 @@ def main():
             times as indicated by the value of
             ifCounterDiscontinuityTime."
             """
-            print("### ifOutUCastPkts")
+            print("\n### ifOutUCastPkts")
             ifOutUCastPkts[t] = {}
 
             for i, pkts in m.ifHCOutUcastPkts.items():
@@ -106,7 +101,7 @@ def main():
             times as indicated by the value of
             ifCounterDiscontinuityTime.
             """
-            print("### ifInUCastPkts")
+            print("\n### ifInUCastPkts")
             ifInUCastPkts[t] = {}
 
             for i, pkts in m.ifHCInUcastPkts.items():
@@ -125,7 +120,7 @@ def main():
             times as indicated by the value of
             ifCounterDiscontinuityTime.
             """
-            print("### ifOutOctets")
+            print("\n### ifOutOctets")
             ifOutOctets[t] = {}
 
             for i, pkts in m.ifHCOutOctets.items():
@@ -144,7 +139,7 @@ def main():
             times as indicated by the value of
             ifCounterDiscontinuityTime.
             """
-            print("### ifInOctets")
+            print("\n### ifInOctets")
             ifInOctets[t] = {}
 
             for i, pkts in m.ifHCInOctets.items():
@@ -156,7 +151,7 @@ def main():
             """
             The number of messages in the sub-queue.
             """
-            print("### ifQstats")
+            print("\n### ifQstats")
             ifQstats[t] = {}
 
             for (i, u), pkts in m.cQStatsDepth.items():
@@ -170,20 +165,83 @@ def main():
 
     except KeyboardInterrupt:
         print "Finished after %d seconds..." % t
-        sys.stdout.close()
+        json_save(args, ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
+        draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
 
 
-class Logger(object):
-    def __init__(self, fname):
-        self.terminal = sys.stdout
-        self.log = open(fname, "w+")
+def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats):
+    plt.ion()
 
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
+    for i, details in ifWithAddr.items():
 
-    def close(self):
-        self.log.close()
+        fig = plt.figure(i, figsize=(15, 10), dpi=80)
+        fig.canvas.set_window_title(str(details["name"]) + ' ' + str(details["ip"]))
+
+        # ifOutUCastPkts
+        xitems = []
+        yitems = []
+
+        for time, value in ifOutUCastPkts.items():
+            xitems.append(int(time))
+            yitems.append(int(value[i]))
+
+        plt.subplot(231)
+        plt.plot(xitems, yitems)
+        plt.title("Interface out")
+        plt.xlabel("time (s)")
+        plt.ylabel("Unicast packets")
+        plt.grid(True)
+
+        # ifInUCastPkts
+        plt.subplot(232)
+        plt.plot([3.1, 2.2])
+        plt.title("Interface in")
+        plt.ylabel("Unicast packets")
+        plt.xlabel("time (s)")
+        plt.grid(True)
+
+        # ifOutOctets
+        plt.subplot(233)
+        plt.plot([3.1, 2.2])
+        plt.title("Number of bytes transmitted")
+        plt.ylabel("Number of bytes")
+        plt.xlabel("time (s)")
+        plt.grid(True)
+
+        # ifInOctets
+        plt.subplot(234)
+        plt.plot([3.1, 2.2])
+        plt.title("Number of bytes received")
+        plt.ylabel("Number of bytes")
+        plt.xlabel("time (s)")
+        plt.grid(True)
+        plt.draw()
+
+        # ifQstats
+        plt.subplot(235)
+        plt.plot([3.1, 2.2])
+        plt.title("The number of messages in the sub-queue.")
+        plt.ylabel("Number of messages")
+        plt.xlabel("time (s)")
+        plt.grid(True)
+        plt.draw()
+
+        break
+
+    while True:
+        continue
+
+
+def json_save(args, ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats):
+    save_object = {"ifWithAddr": ifWithAddr,
+                   "ifOutUCastPkts": ifOutUCastPkts,
+                   "ifInUCastPkts": ifInUCastPkts,
+                   "ifOutOctets": ifOutOctets,
+                   "ifInOctets": ifInOctets,
+                   "ifQstats": ifQstats}
+
+    with open("router_" + args.router + ".json", 'w') as outfile:
+        json.dump(save_object, outfile)
 
 if __name__ == "__main__":
     main()
