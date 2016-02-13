@@ -1,14 +1,14 @@
-Feb 12 13:11:18.769 HYPERVISOR: Release 0.2.12-amd64/Darwin (tag 2014032722)
-Feb 12 13:11:18.769 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 60475.
-Feb 12 13:11:18.868 HYPERVISOR: exec_cmd: hypervisor version 
-Feb 12 13:11:18.869 HYPERVISOR: exec_cmd: hypervisor uuid 
-Feb 12 13:11:18.869 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/rafaelferreira/Development/ect_ua/ddr/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips 
-Feb 12 13:11:18.869 GENERAL: working_dir=/Users/rafaelferreira/Development/ect_ua/ddr/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips
-Feb 12 13:11:18.870 HYPERVISOR: exec_cmd: ethsw create SW3 
-Feb 12 13:11:20.993 HYPERVISOR: exec_cmd: nio create_udp udp-54759299-44d3-44ff-b911-9791951e8340 10005 127.0.0.1 10004 
-Feb 12 13:11:21.004 HYPERVISOR: exec_cmd: ethsw add_nio SW3 udp-54759299-44d3-44ff-b911-9791951e8340 
-Feb 12 13:11:21.022 HYPERVISOR: exec_cmd: ethsw set_access_port SW3 udp-54759299-44d3-44ff-b911-9791951e8340 1 
-Feb 12 13:49:40.012 HYPERVISOR: exec_cmd: ethsw delete SW3 
-Feb 12 13:49:40.034 HYPERVISOR: exec_cmd: hypervisor stop 
-Feb 12 13:49:40.247 HYPERVISOR: Stopped.
-Feb 12 13:49:40.248 GENERAL: reset done.
+Feb 12 20:56:31.960 HYPERVISOR: Release 0.2.12-amd64/Darwin (tag 2014032722)
+Feb 12 20:56:31.960 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 63437.
+Feb 12 20:56:32.068 HYPERVISOR: exec_cmd: hypervisor version 
+Feb 12 20:56:32.068 HYPERVISOR: exec_cmd: hypervisor uuid 
+Feb 12 20:56:32.069 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/rafaelferreira/Development/ect_ua/ddr/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips 
+Feb 12 20:56:32.069 GENERAL: working_dir=/Users/rafaelferreira/Development/ect_ua/ddr/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips
+Feb 12 20:56:32.069 HYPERVISOR: exec_cmd: ethsw create SW4 
+Feb 12 20:56:33.845 HYPERVISOR: exec_cmd: nio create_udp udp-048bbaf0-07ea-444a-832f-97ae6fbb2c95 10001 127.0.0.1 10000 
+Feb 12 20:56:33.847 HYPERVISOR: exec_cmd: ethsw add_nio SW4 udp-048bbaf0-07ea-444a-832f-97ae6fbb2c95 
+Feb 12 20:56:33.867 HYPERVISOR: exec_cmd: ethsw set_access_port SW4 udp-048bbaf0-07ea-444a-832f-97ae6fbb2c95 1 
+Feb 13 17:41:12.195 HYPERVISOR: exec_cmd: ethsw delete SW4 
+Feb 13 17:41:12.219 HYPERVISOR: exec_cmd: hypervisor stop 
+Feb 13 17:41:12.496 HYPERVISOR: Stopped.
+Feb 13 17:41:12.497 GENERAL: reset done.

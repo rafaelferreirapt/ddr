@@ -6,28 +6,6 @@
     "topology": {
         "links": [
             {
-                "description": "Link from SW1 port 1 to R1 port FastEthernet1/0",
-                "destination_node_id": 1,
-                "destination_port_id": 3,
-                "destination_port_label": {
-                    "color": "#000000",
-                    "font": "TypeWriter,10,-1,5,75,0,0,0,0,0",
-                    "text": "f1/0",
-                    "x": 7.484557196031233,
-                    "y": -8.805229726742795
-                },
-                "id": 1,
-                "source_node_id": 3,
-                "source_port_id": 13,
-                "source_port_label": {
-                    "color": "#000000",
-                    "font": "TypeWriter,10,-1,5,75,0,0,0,0,0",
-                    "text": "1",
-                    "x": 61.01544280396877,
-                    "y": 46.805229726742795
-                }
-            },
-            {
                 "description": "Link from R2 port FastEthernet1/1 to SW4 port 1",
                 "destination_node_id": 6,
                 "destination_port_id": 37,
@@ -38,7 +16,7 @@
                     "x": 1.0370066084841483,
                     "y": 36.3052231333796
                 },
-                "id": 2,
+                "id": 1,
                 "source_node_id": 2,
                 "source_port_id": 10,
                 "source_port_label": {
@@ -60,7 +38,7 @@
                     "x": -4.366300849292486,
                     "y": 12.732270422189139
                 },
-                "id": 3,
+                "id": 2,
                 "source_node_id": 2,
                 "source_port_id": 9,
                 "source_port_label": {
@@ -82,7 +60,7 @@
                     "x": 3.200811830598525,
                     "y": -7.59581411177831
                 },
-                "id": 4,
+                "id": 3,
                 "source_node_id": 2,
                 "source_port_id": 8,
                 "source_port_label": {
@@ -91,6 +69,28 @@
                     "text": "f0/1",
                     "x": 65.29918816940146,
                     "y": 45.59581411177831
+                }
+            },
+            {
+                "description": "Link from SW1 port 1 to R1 port FastEthernet1/0",
+                "destination_node_id": 1,
+                "destination_port_id": 3,
+                "destination_port_label": {
+                    "color": "#000000",
+                    "font": "TypeWriter,10,-1,5,75,0,0,0,0,0",
+                    "text": "f1/0",
+                    "x": 7.484557196031233,
+                    "y": -8.805229726742795
+                },
+                "id": 4,
+                "source_node_id": 3,
+                "source_port_id": 13,
+                "source_port_label": {
+                    "color": "#000000",
+                    "font": "TypeWriter,10,-1,5,75,0,0,0,0,0",
+                    "text": "1",
+                    "x": 61.01544280396877,
+                    "y": 46.805229726742795
                 }
             },
             {
@@ -119,9 +119,23 @@
                 "description": "Link from VM port nio_tap:/dev/tap0 to R1 port FastEthernet0/0",
                 "destination_node_id": 1,
                 "destination_port_id": 1,
+                "destination_port_label": {
+                    "color": "#000000",
+                    "font": "TypeWriter,10,-1,5,75,0,0,0,0,0",
+                    "text": "f0/0",
+                    "x": -0.19804707369982566,
+                    "y": 44.31344147576546
+                },
                 "id": 6,
                 "source_node_id": 8,
-                "source_port_id": 58
+                "source_port_id": 58,
+                "source_port_label": {
+                    "color": "#000000",
+                    "font": "TypeWriter,10,-1,5,75,0,0,0,0,0",
+                    "text": "nio_tap:/dev/tap0",
+                    "x": 137.59658237897474,
+                    "y": -4.048522582589552
+                }
             }
         ],
         "nodes": [
@@ -137,6 +151,18 @@
                     "y": -25.0
                 },
                 "ports": [
+                    {
+                        "adapter_number": 2,
+                        "id": 5,
+                        "name": "FastEthernet2/0",
+                        "port_number": 0
+                    },
+                    {
+                        "adapter_number": 2,
+                        "id": 6,
+                        "name": "FastEthernet2/1",
+                        "port_number": 1
+                    },
                     {
                         "adapter_number": 0,
                         "description": "connected to VM on port nio_tap:/dev/tap0",
@@ -159,7 +185,7 @@
                         "adapter_number": 1,
                         "description": "connected to SW1 on port 1",
                         "id": 3,
-                        "link_id": 1,
+                        "link_id": 4,
                         "name": "FastEthernet1/0",
                         "nio": "NIO_UDP",
                         "port_number": 0
@@ -168,18 +194,6 @@
                         "adapter_number": 1,
                         "id": 4,
                         "name": "FastEthernet1/1",
-                        "port_number": 1
-                    },
-                    {
-                        "adapter_number": 2,
-                        "id": 5,
-                        "name": "FastEthernet2/0",
-                        "port_number": 0
-                    },
-                    {
-                        "adapter_number": 2,
-                        "id": 6,
-                        "name": "FastEthernet2/1",
                         "port_number": 1
                     }
                 ],
@@ -238,6 +252,18 @@
                 },
                 "ports": [
                     {
+                        "adapter_number": 2,
+                        "id": 11,
+                        "name": "FastEthernet2/0",
+                        "port_number": 0
+                    },
+                    {
+                        "adapter_number": 2,
+                        "id": 12,
+                        "name": "FastEthernet2/1",
+                        "port_number": 1
+                    },
+                    {
                         "adapter_number": 0,
                         "description": "connected to R1 on port FastEthernet0/1",
                         "id": 7,
@@ -250,7 +276,7 @@
                         "adapter_number": 0,
                         "description": "connected to SW2 on port 1",
                         "id": 8,
-                        "link_id": 4,
+                        "link_id": 3,
                         "name": "FastEthernet0/1",
                         "nio": "NIO_UDP",
                         "port_number": 1
@@ -259,7 +285,7 @@
                         "adapter_number": 1,
                         "description": "connected to SW3 on port 1",
                         "id": 9,
-                        "link_id": 3,
+                        "link_id": 2,
                         "name": "FastEthernet1/0",
                         "nio": "NIO_UDP",
                         "port_number": 0
@@ -268,21 +294,9 @@
                         "adapter_number": 1,
                         "description": "connected to SW4 on port 1",
                         "id": 10,
-                        "link_id": 2,
+                        "link_id": 1,
                         "name": "FastEthernet1/1",
                         "nio": "NIO_UDP",
-                        "port_number": 1
-                    },
-                    {
-                        "adapter_number": 2,
-                        "id": 11,
-                        "name": "FastEthernet2/0",
-                        "port_number": 0
-                    },
-                    {
-                        "adapter_number": 2,
-                        "id": 12,
-                        "name": "FastEthernet2/1",
                         "port_number": 1
                     }
                 ],
@@ -343,7 +357,7 @@
                     {
                         "description": "connected to R1 on port FastEthernet1/0",
                         "id": 13,
-                        "link_id": 1,
+                        "link_id": 4,
                         "name": "1",
                         "nio": "NIO_UDP",
                         "port_number": 1,
@@ -423,7 +437,7 @@
                     {
                         "description": "connected to R2 on port FastEthernet0/1",
                         "id": 21,
-                        "link_id": 4,
+                        "link_id": 3,
                         "name": "1",
                         "nio": "NIO_UDP",
                         "port_number": 1,
@@ -503,7 +517,7 @@
                     {
                         "description": "connected to R2 on port FastEthernet1/0",
                         "id": 29,
-                        "link_id": 3,
+                        "link_id": 2,
                         "name": "1",
                         "nio": "NIO_UDP",
                         "port_number": 1,
@@ -583,7 +597,7 @@
                     {
                         "description": "connected to R2 on port FastEthernet1/1",
                         "id": 37,
-                        "link_id": 2,
+                        "link_id": 1,
                         "name": "1",
                         "nio": "NIO_UDP",
                         "port_number": 1,

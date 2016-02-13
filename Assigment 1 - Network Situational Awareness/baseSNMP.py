@@ -65,6 +65,7 @@ def main():
     ifInOctets = {}
     ifQstats = {}
 
+    """
     ## load from json
     with open('router_10.0.0.2.json') as data_file:
         content = json.load(data_file)
@@ -77,6 +78,7 @@ def main():
 
     draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
     exit()
+    """
 
     try:
 
@@ -181,12 +183,28 @@ def main():
     except KeyboardInterrupt:
         print "Finished after %d seconds..." % t
         json_save(args, ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
-        draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
-        sys.stdout.close()
+        draw_plt(args, ifWithAddr)
 
 
-def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats):
+def draw_plt(args, ifWithAddr):
+    # load from json file
+    with open("router_" + args.router + ".json") as data_file:
+        content = json.load(data_file)
+
+    ifOutUCastPkts = content["ifOutUCastPkts"]
+    ifInUCastPkts = content["ifInUCastPkts"]
+    ifOutOctets = content["ifOutUCastPkts"]
+    ifInOctets = content["ifOutUCastPkts"]
+    ifQstats = content["ifOutUCastPkts"]
+    # load from json file
+
     plt.ion()
+
+    time = []
+
+    for t, value in ifOutUCastPkts.items():
+        time.append(int(t))
+    time = sorted(time, key=int)
 
     for i, details in ifWithAddr.items():
         fig = plt.figure(i, figsize=(16, 10), dpi=80)
@@ -194,13 +212,11 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
         fig.subplots_adjust(wspace=0.23)
 
         # ifOutUCastPkts
-        xitems = []
+        xitems = time
         yitems = []
 
-        for time, value in ifOutUCastPkts.items():
-            if str(i) in value:
-                xitems.append(int(time))
-                yitems.append(int(value[str(i)]))
+        for t in time:
+            yitems.append(ifOutUCastPkts[str(t)][str(i)])
 
         plt.subplot(231)
         plt.plot(xitems, yitems)
@@ -210,16 +226,13 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
         plt.grid(True)
 
         # ifInUCastPkts
-        plt.subplot(232)
-
-        xitems = []
+        xitems = time
         yitems = []
 
-        for time, value in ifInUCastPkts.items():
-            if str(i) in value:
-                xitems.append(int(time))
-                yitems.append(int(value[str(i)]))
+        for t in time:
+            yitems.append(ifInUCastPkts[str(t)][str(i)])
 
+        plt.subplot(232)
         plt.plot(xitems, yitems)
         plt.title("Interface in")
         plt.ylabel("Unicast packets")
@@ -227,16 +240,13 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
         plt.grid(True)
 
         # ifOutOctets
-        plt.subplot(233)
-
-        xitems = []
+        xitems = time
         yitems = []
 
-        for time, value in ifOutOctets.items():
-            if str(i) in value:
-                xitems.append(int(time))
-                yitems.append(int(value[str(i)]))
+        for t in time:
+            yitems.append(ifOutOctets[str(t)][str(i)])
 
+        plt.subplot(233)
         plt.plot(xitems, yitems)
         plt.title("Number of bytes transmitted")
         plt.ylabel("Number of bytes")
@@ -244,16 +254,13 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
         plt.grid(True)
 
         # ifInOctets
-        plt.subplot(234)
-
-        xitems = []
+        xitems = time
         yitems = []
 
-        for time, value in ifInOctets.items():
-            if str(i) in value:
-                xitems.append(int(time))
-                yitems.append(int(value[str(i)]))
+        for t in time:
+            yitems.append(ifInOctets[str(t)][str(i)])
 
+        plt.subplot(234)
         plt.plot(xitems, yitems)
         plt.title("Number of bytes received")
         plt.ylabel("Number of bytes")
@@ -262,16 +269,13 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
         plt.draw()
 
         # ifQstats
-        plt.subplot(235)
-
-        xitems = []
+        xitems = time
         yitems = []
 
-        for time, value in ifQstats.items():
-            if str(i) in value:
-                xitems.append(int(time))
-                yitems.append(int(value[str(i)]))
+        for t in time:
+            yitems.append(ifQstats[str(t)][str(i)])
 
+        plt.subplot(235)
         plt.plot(xitems, yitems)
         plt.title("The number of messages in the sub-queue.")
         plt.ylabel("Number of messages")
@@ -279,6 +283,7 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
         plt.grid(True)
         plt.draw()
 
+    sys.stdout.close()
     while True:
         continue
 
