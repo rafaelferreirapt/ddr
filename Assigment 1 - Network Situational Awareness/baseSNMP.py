@@ -6,6 +6,7 @@ from snimpy.manager import Manager as M
 from snimpy.manager import load
 import re
 import argparse
+import pydevd
 
 
 def IPfromOctetString(t, s):
@@ -17,6 +18,8 @@ def IPfromOctetString(t, s):
 
 
 def main():
+    pydevd.settrace('10.0.1.100', port=5678, stdoutToServer=True, stderrToServer=True)
+
     mib.path(mib.path() + ":/usr/share/mibs/cisco")
     load("SNMPv2-MIB")
     load("IF-MIB")
@@ -59,12 +62,29 @@ def main():
 
     # print(ifWithAddr)
 
+    # print dir(m)
+    # print type(m)
+    # exit()
+
     t = 0
     try:
 
         while True:
             print("=== %d Seconds passed ===" % t)
 
+            # ifHCOutUcastPkts
+            """
+            The total number of packets that higher-level protocols
+            requested be transmitted, and which were not addressed to a
+            multicast or broadcast address at this sub-layer, including
+            those that were discarded or not sent. This object is a
+            64-bit version of ifOutUcastPkts.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            ifCounterDiscontinuityTime."
+            """
             ifOutUCastPkts = {}  # Stores (order, first adr.) of all interfaces
             for i, pkts in m.ifHCOutUcastPkts.items():
                 if i in ifWithAddr.keys():
@@ -74,6 +94,17 @@ def main():
 
             print("===")
 
+            """
+            The number of packets, delivered by this sub-layer to a
+            higher (sub-)layer, which were not addressed to a multicast
+            or broadcast address at this sub-layer. This object is a
+            64-bit version of ifInUcastPkts.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            ifCounterDiscontinuityTime.
+            """
             ifInUCastPkts = {}  # Stores (order, first adr.) of all interfaces
             for i, pkts in m.ifHCInUcastPkts.items():
                 if i in ifWithAddr.keys():
@@ -83,6 +114,16 @@ def main():
 
             print("===")
 
+            """
+            The total number of octets transmitted out of the
+            interface, including framing characters. This object is a
+            64-bit version of ifOutOctets.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            ifCounterDiscontinuityTime.
+            """
             ifOutOctets = {}  # Stores (order, first adr.) of all interfaces
             for i, pkts in m.ifHCOutOctets.items():
                 if i in ifWithAddr.keys():
@@ -92,6 +133,16 @@ def main():
 
             print("===")
 
+            """
+            The total number of octets received on the interface,
+            including framing characters. This object is a 64-bit
+            version of ifInOctets.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            ifCounterDiscontinuityTime.
+            """
             ifInOctets = {}  # Stores (order, first adr.) of all interfaces
             for i, pkts in m.ifHCInOctets.items():
                 if i in ifWithAddr.keys():
@@ -101,6 +152,9 @@ def main():
 
             print("===")
 
+            """
+            The number of messages in the sub-queue.
+            """
             ifQstats = {}  # Stores (order, first adr.) of all interfaces
             for (i, u), pkts in m.cQStatsDepth.items():
                 if i in ifWithAddr.keys():
