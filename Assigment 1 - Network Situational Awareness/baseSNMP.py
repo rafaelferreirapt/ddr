@@ -1,6 +1,7 @@
 from snimpy import mib
 import time
 import json
+import sys
 
 from snimpy.manager import Manager as M
 from snimpy.manager import load
@@ -31,6 +32,10 @@ def main():
     parser.add_argument('-s', '--sinterval', type=int, help='sampling interval (seconds)', default=5)
     args = parser.parse_args()
 
+    sys.stdout = Logger("router_" + args.router)
+
+    print(args)
+
     # Creates SNMP manager for router with address args.router
     m = M(args.router, 'private', 3, secname='uDDR', authprotocol="MD5", authpassword="authpass", privprotocol="AES",
           privpassword="privpass")
@@ -52,16 +57,26 @@ def main():
             ifWithAddr.update({i: {"ip": ip_from_octet_string(addr[0], addr[1]), "name": m.ifDescr[i]}})
         print('%s, Interface order: %d, %s' % (ip_from_octet_string(addr[0], addr[1]), i, m.ifDescr[i]))
 
-    # print dir(m)
-    # print type(m)
-    # exit()
-
     t = 0
+
     ifOutUCastPkts = {}
     ifInUCastPkts = {}
     ifOutOctets = {}
     ifInOctets = {}
     ifQstats = {}
+
+    ## load from json
+    with open('router_10.0.0.2.json') as data_file:
+        content = json.load(data_file)
+
+    ifOutUCastPkts = content["ifOutUCastPkts"]
+    ifInUCastPkts = content["ifInUCastPkts"]
+    ifOutOctets = content["ifOutUCastPkts"]
+    ifInOctets = content["ifOutUCastPkts"]
+    ifQstats = content["ifOutUCastPkts"]
+
+    draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
+    exit()
 
     try:
 
@@ -167,23 +182,25 @@ def main():
         print "Finished after %d seconds..." % t
         json_save(args, ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
         draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
+        sys.stdout.close()
 
 
 def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats):
     plt.ion()
 
     for i, details in ifWithAddr.items():
-
-        fig = plt.figure(i, figsize=(15, 10), dpi=80)
+        fig = plt.figure(i, figsize=(16, 10), dpi=80)
         fig.canvas.set_window_title(str(details["name"]) + ' ' + str(details["ip"]))
+        fig.subplots_adjust(wspace=0.23)
 
         # ifOutUCastPkts
         xitems = []
         yitems = []
 
         for time, value in ifOutUCastPkts.items():
-            xitems.append(int(time))
-            yitems.append(int(value[i]))
+            if str(i) in value:
+                xitems.append(int(time))
+                yitems.append(int(value[str(i)]))
 
         plt.subplot(231)
         plt.plot(xitems, yitems)
@@ -194,7 +211,16 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
 
         # ifInUCastPkts
         plt.subplot(232)
-        plt.plot([3.1, 2.2])
+
+        xitems = []
+        yitems = []
+
+        for time, value in ifInUCastPkts.items():
+            if str(i) in value:
+                xitems.append(int(time))
+                yitems.append(int(value[str(i)]))
+
+        plt.plot(xitems, yitems)
         plt.title("Interface in")
         plt.ylabel("Unicast packets")
         plt.xlabel("time (s)")
@@ -202,7 +228,16 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
 
         # ifOutOctets
         plt.subplot(233)
-        plt.plot([3.1, 2.2])
+
+        xitems = []
+        yitems = []
+
+        for time, value in ifOutOctets.items():
+            if str(i) in value:
+                xitems.append(int(time))
+                yitems.append(int(value[str(i)]))
+
+        plt.plot(xitems, yitems)
         plt.title("Number of bytes transmitted")
         plt.ylabel("Number of bytes")
         plt.xlabel("time (s)")
@@ -210,7 +245,16 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
 
         # ifInOctets
         plt.subplot(234)
-        plt.plot([3.1, 2.2])
+
+        xitems = []
+        yitems = []
+
+        for time, value in ifInOctets.items():
+            if str(i) in value:
+                xitems.append(int(time))
+                yitems.append(int(value[str(i)]))
+
+        plt.plot(xitems, yitems)
         plt.title("Number of bytes received")
         plt.ylabel("Number of bytes")
         plt.xlabel("time (s)")
@@ -219,14 +263,21 @@ def draw_plt(ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets,
 
         # ifQstats
         plt.subplot(235)
-        plt.plot([3.1, 2.2])
+
+        xitems = []
+        yitems = []
+
+        for time, value in ifQstats.items():
+            if str(i) in value:
+                xitems.append(int(time))
+                yitems.append(int(value[str(i)]))
+
+        plt.plot(xitems, yitems)
         plt.title("The number of messages in the sub-queue.")
         plt.ylabel("Number of messages")
         plt.xlabel("time (s)")
         plt.grid(True)
         plt.draw()
-
-        break
 
     while True:
         continue
@@ -242,6 +293,19 @@ def json_save(args, ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifIn
 
     with open("router_" + args.router + ".json", 'w') as outfile:
         json.dump(save_object, outfile)
+
+
+class Logger(object):
+    def __init__(self, fname):
+        self.terminal = sys.stdout
+        self.log = open(fname, "w+")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+
+    def close(self):
+        self.log.close()
 
 if __name__ == "__main__":
     main()
