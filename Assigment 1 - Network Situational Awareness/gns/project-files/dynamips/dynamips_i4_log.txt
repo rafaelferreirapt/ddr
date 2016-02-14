@@ -53,3 +53,4 @@ Feb 14 12:07:13.040 VM: VM R2 destroyed.
 Feb 14 12:07:13.042 HYPERVISOR: exec_cmd: hypervisor stop 
 Feb 14 12:07:13.526 HYPERVISOR: Stopped.
 Feb 14 12:07:13.526 GENERAL: reset done.
+
