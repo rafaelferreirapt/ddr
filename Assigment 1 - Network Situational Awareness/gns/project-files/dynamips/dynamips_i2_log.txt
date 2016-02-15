@@ -1,15 +1,65 @@
-
-Feb 13 13:32:33.908 HYPERVISOR: Release 0.2.12-amd64/Darwin (tag 2014032722)
-Feb 13 13:32:33.908 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 60958.
-Feb 13 13:32:33.936 HYPERVISOR: exec_cmd: hypervisor version 
-Feb 13 13:32:33.939 HYPERVISOR: exec_cmd: hypervisor uuid 
-Feb 13 13:32:33.941 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/RodrigoCunha/Desktop/StudyWorkTeam/4ano/2Semestre/DDR/git/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips 
-Feb 13 13:32:33.941 GENERAL: working_dir=/Users/RodrigoCunha/Desktop/StudyWorkTeam/4ano/2Semestre/DDR/git/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips
-Feb 13 13:32:33.944 HYPERVISOR: exec_cmd: ethsw create SW2 
-Feb 13 13:32:36.526 HYPERVISOR: exec_cmd: nio create_udp udp-1ae4d1f3-149b-4145-95cb-0099f29ccecd 10007 127.0.0.1 10006 
-Feb 13 13:32:36.554 HYPERVISOR: exec_cmd: ethsw add_nio SW2 udp-1ae4d1f3-149b-4145-95cb-0099f29ccecd 
-Feb 13 13:32:36.588 HYPERVISOR: exec_cmd: ethsw set_access_port SW2 udp-1ae4d1f3-149b-4145-95cb-0099f29ccecd 1 
-Feb 14 12:07:12.904 HYPERVISOR: exec_cmd: ethsw delete SW2 
-Feb 14 12:07:12.927 HYPERVISOR: exec_cmd: hypervisor stop 
-Feb 14 12:07:13.022 HYPERVISOR: Stopped.
-Feb 14 12:07:13.022 GENERAL: reset done.
+Feb 15 11:09:22.779 HYPERVISOR: Release 0.2.12-amd64/Darwin (tag 2014032722)
+Feb 15 11:09:22.779 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 51224.
+Feb 15 11:09:23.028 HYPERVISOR: exec_cmd: hypervisor version 
+Feb 15 11:09:23.029 HYPERVISOR: exec_cmd: hypervisor uuid 
+Feb 15 11:09:23.030 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/RodrigoCunha/Desktop/StudyWorkTeam/4ano/2Semestre/DDR/git/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips 
+Feb 15 11:09:23.030 GENERAL: working_dir=/Users/RodrigoCunha/Desktop/StudyWorkTeam/4ano/2Semestre/DDR/git/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips
+Feb 15 11:09:23.032 HYPERVISOR: exec_cmd: vm create R1 1 c7200 
+Feb 15 11:09:23.033 VM: VM R1 created.
+Feb 15 11:09:23.053 HYPERVISOR: exec_cmd: vm set_con_tcp_port R1 2001 
+Feb 15 11:09:23.054 HYPERVISOR: exec_cmd: c7200 get_mac_addr R1 
+Feb 15 11:09:23.054 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:23.055 HYPERVISOR: exec_cmd: vm slot_add_binding R1 0 0 C7200-IO-FE 
+Feb 15 11:09:23.056 HYPERVISOR: exec_cmd: vm set_disk0 R1 0 
+Feb 15 11:09:23.057 HYPERVISOR: exec_cmd: vm set_ios R1 /Users/RodrigoCunha/GNS3/images/IOS/c7200-adventerprisek9-mz.151-4.M2.image 
+Feb 15 11:09:23.058 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:23.059 HYPERVISOR: exec_cmd: vm slot_add_binding R1 1 0 PA-2FE-TX 
+Feb 15 11:09:23.059 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:23.060 HYPERVISOR: exec_cmd: vm slot_add_binding R1 2 0 PA-2FE-TX 
+Feb 15 11:09:23.060 HYPERVISOR: exec_cmd: vm set_nvram R1 512 
+Feb 15 11:09:23.061 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:23.062 HYPERVISOR: exec_cmd: vm slot_remove_binding R1 0 0 
+Feb 15 11:09:23.062 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:23.063 HYPERVISOR: exec_cmd: vm slot_add_binding R1 0 0 C7200-IO-2FE 
+Feb 15 11:09:23.063 HYPERVISOR: exec_cmd: c7200 set_mac_addr R1 ca01.7c56.0000 
+Feb 15 11:09:23.064 HYPERVISOR: exec_cmd: vm set_ram R1 512 
+Feb 15 11:09:23.065 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:23.066 HYPERVISOR: exec_cmd: vm set_idle_pc R1 0x60608040 
+Feb 15 11:09:23.066 HYPERVISOR: exec_cmd: vm set_config R1 configs/i1_startup-config.cfg 
+Feb 15 11:09:23.068 HYPERVISOR: exec_cmd: vm create Ghost 0 c7200 
+Feb 15 11:09:23.068 VM: VM Ghost created.
+Feb 15 11:09:23.069 HYPERVISOR: exec_cmd: vm set_ios Ghost /Users/RodrigoCunha/GNS3/images/IOS/c7200-adventerprisek9-mz.151-4.M2.image 
+Feb 15 11:09:23.069 HYPERVISOR: exec_cmd: vm set_ghost_status Ghost 1 
+Feb 15 11:09:23.070 HYPERVISOR: exec_cmd: vm set_ghost_file Ghost c7200-adventerprisek9-mz.151-4.M2.image-512.ghost 
+Feb 15 11:09:23.070 HYPERVISOR: exec_cmd: vm set_ram Ghost 512 
+Feb 15 11:09:23.071 HYPERVISOR: exec_cmd: vm get_status Ghost 
+Feb 15 11:09:23.072 HYPERVISOR: exec_cmd: vm start Ghost 
+Feb 15 11:09:23.529 HYPERVISOR: exec_cmd: vm get_status Ghost 
+Feb 15 11:09:23.529 HYPERVISOR: exec_cmd: vm stop Ghost 
+Feb 15 11:09:25.394 VM: VM Ghost shutdown.
+Feb 15 11:09:25.396 HYPERVISOR: exec_cmd: vm clean_delete Ghost 
+Feb 15 11:09:25.396 VM: VM Ghost destroyed.
+Feb 15 11:09:25.443 HYPERVISOR: exec_cmd: vm set_ghost_status R1 2 
+Feb 15 11:09:25.443 HYPERVISOR: exec_cmd: vm set_ghost_file R1 c7200-adventerprisek9-mz.151-4.M2.image-512.ghost 
+Feb 15 11:09:25.571 HYPERVISOR: exec_cmd: nio create_tap tap-dfff5fce-e216-4805-9521-276df01e3abd /dev/tap0 
+Feb 15 11:09:25.572 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R1 0 0 tap-dfff5fce-e216-4805-9521-276df01e3abd 
+Feb 15 11:09:25.573 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:25.726 HYPERVISOR: exec_cmd: nio create_udp udp-2f2f49d7-409b-4441-a3d8-d2fe09aa016f 10001 127.0.0.1 10000 
+Feb 15 11:09:25.734 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R1 1 0 udp-2f2f49d7-409b-4441-a3d8-d2fe09aa016f 
+Feb 15 11:09:25.737 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:25.939 HYPERVISOR: exec_cmd: nio create_udp udp-44ec4371-a60d-4d87-b409-4249fd0b6c02 10009 127.0.0.1 10008 
+Feb 15 11:09:25.974 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R1 0 1 udp-44ec4371-a60d-4d87-b409-4249fd0b6c02 
+Feb 15 11:09:25.975 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:59.107 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:09:59.108 HYPERVISOR: exec_cmd: vm start R1 
+Feb 15 11:46:32.508 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:46:32.509 HYPERVISOR: exec_cmd: vm stop R1 
+Feb 15 11:46:33.949 VM: VM R1 shutdown.
+Feb 15 11:46:38.076 HYPERVISOR: exec_cmd: vm extract_config R1 
+Feb 15 11:46:38.584 HYPERVISOR: exec_cmd: vm get_status R1 
+Feb 15 11:46:38.585 HYPERVISOR: exec_cmd: vm extract_config R1 
+Feb 15 11:46:38.588 HYPERVISOR: exec_cmd: vm delete R1 
+Feb 15 11:46:38.588 VM: VM R1 destroyed.
+Feb 15 11:46:38.589 HYPERVISOR: exec_cmd: hypervisor stop 
+Feb 15 11:46:38.643 HYPERVISOR: Stopped.
+Feb 15 11:46:38.644 GENERAL: reset done.

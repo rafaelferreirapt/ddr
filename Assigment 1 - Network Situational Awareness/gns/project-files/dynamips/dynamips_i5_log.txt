@@ -1,14 +1,14 @@
-Feb 13 13:32:33.926 HYPERVISOR: Release 0.2.12-amd64/Darwin (tag 2014032722)
-Feb 13 13:32:33.926 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 60961.
-Feb 13 13:32:33.946 HYPERVISOR: exec_cmd: hypervisor version 
-Feb 13 13:32:33.957 HYPERVISOR: exec_cmd: hypervisor uuid 
-Feb 13 13:32:33.959 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/RodrigoCunha/Desktop/StudyWorkTeam/4ano/2Semestre/DDR/git/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips 
-Feb 13 13:32:33.959 GENERAL: working_dir=/Users/RodrigoCunha/Desktop/StudyWorkTeam/4ano/2Semestre/DDR/git/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips
-Feb 13 13:32:33.961 HYPERVISOR: exec_cmd: ethsw create SW1 
-Feb 13 13:32:36.419 HYPERVISOR: exec_cmd: nio create_udp udp-f8190bd1-bc8f-4711-8990-a82c48fbe49b 10000 127.0.0.1 10001 
-Feb 13 13:32:36.440 HYPERVISOR: exec_cmd: ethsw add_nio SW1 udp-f8190bd1-bc8f-4711-8990-a82c48fbe49b 
-Feb 13 13:32:36.456 HYPERVISOR: exec_cmd: ethsw set_access_port SW1 udp-f8190bd1-bc8f-4711-8990-a82c48fbe49b 1 
-Feb 14 12:07:12.903 HYPERVISOR: exec_cmd: ethsw delete SW1 
-Feb 14 12:07:12.927 HYPERVISOR: exec_cmd: hypervisor stop 
-Feb 14 12:07:13.022 HYPERVISOR: Stopped.
-Feb 14 12:07:13.022 GENERAL: reset done.
+Feb 15 11:09:22.850 HYPERVISOR: Release 0.2.12-amd64/Darwin (tag 2014032722)
+Feb 15 11:09:22.850 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 51227.
+Feb 15 11:09:23.003 HYPERVISOR: exec_cmd: hypervisor version 
+Feb 15 11:09:23.004 HYPERVISOR: exec_cmd: hypervisor uuid 
+Feb 15 11:09:23.004 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/RodrigoCunha/Desktop/StudyWorkTeam/4ano/2Semestre/DDR/git/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips 
+Feb 15 11:09:23.005 GENERAL: working_dir=/Users/RodrigoCunha/Desktop/StudyWorkTeam/4ano/2Semestre/DDR/git/Assigment 1 - Network Situational Awareness/gns/project-files/dynamips
+Feb 15 11:09:23.007 HYPERVISOR: exec_cmd: ethsw create SW1 
+Feb 15 11:09:25.704 HYPERVISOR: exec_cmd: nio create_udp udp-bbc9b868-a7d8-4ee0-9cd2-210b408a1aa0 10000 127.0.0.1 10001 
+Feb 15 11:09:25.733 HYPERVISOR: exec_cmd: ethsw add_nio SW1 udp-bbc9b868-a7d8-4ee0-9cd2-210b408a1aa0 
+Feb 15 11:09:25.758 HYPERVISOR: exec_cmd: ethsw set_access_port SW1 udp-bbc9b868-a7d8-4ee0-9cd2-210b408a1aa0 1 
+Feb 15 11:46:38.074 HYPERVISOR: exec_cmd: ethsw delete SW1 
+Feb 15 11:46:38.085 HYPERVISOR: exec_cmd: hypervisor stop 
+Feb 15 11:46:38.573 HYPERVISOR: Stopped.
+Feb 15 11:46:38.573 GENERAL: reset done.
