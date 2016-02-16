@@ -26,3 +26,5 @@
 *.mtc1
 *.out
 *.synctex.gz
+
+dynamips_*_log.txt
