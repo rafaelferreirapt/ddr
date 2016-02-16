@@ -28,3 +28,5 @@
 *.synctex.gz
 
 dynamips_*_log.txt
+c7200_*_lock
+c7200_*_log*
