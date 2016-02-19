@@ -81,6 +81,19 @@ def main():
     """
 
     try:
+        prevOutUCastPkts = {}
+        prevInUCastPkts = {}
+        prevOutOctets = {}
+        prevInOctets = {}
+        previfQstats = {}
+
+        for i in ifWithAddr.keys():
+            prevOutUCastPkts[i] = 0
+            prevInUCastPkts[i] = 0
+            prevOutOctets[i] = 0
+            prevInOctets[i] = 0
+            previfQstats[i] = 0
+
 
         while True:
             print("\n=== %d Seconds passed ===" % t)
@@ -104,8 +117,10 @@ def main():
             for i, pkts in m.ifHCOutUcastPkts.items():
                 if i in ifWithAddr.keys():
                     if i not in ifOutUCastPkts[t]:
-                        ifOutUCastPkts[t].update({i: pkts})
-                    print('%s, Interface Out packets: %d' % (m.ifDescr[i], pkts))
+                        ifOutUCastPkts[t].update({i: pkts - prevOutUCastPkts[i]})
+                        prevOutUCastPkts[i] = pkts
+
+                    print('%s, Interface Out packets: %d' % (m.ifDescr[i], ifOutUCastPkts[t][i]))
 
             """
             The number of packets, delivered by this sub-layer to a
@@ -124,8 +139,9 @@ def main():
             for i, pkts in m.ifHCInUcastPkts.items():
                 if i in ifWithAddr.keys():
                     if i not in ifInUCastPkts[t]:
-                        ifInUCastPkts[t].update({i: pkts})
-                    print('%s, Interface In packets: %d' % (m.ifDescr[i], pkts))
+                        ifInUCastPkts[t].update({i: pkts - prevInUCastPkts[i]})
+                        prevInUCastPkts[i] = pkts
+                    print('%s, Interface In packets: %d' % (m.ifDescr[i], ifInUCastPkts[t][i]))
 
             """
             The total number of octets transmitted out of the
@@ -143,8 +159,9 @@ def main():
             for i, pkts in m.ifHCOutOctets.items():
                 if i in ifWithAddr.keys():
                     if i not in ifOutOctets[t]:
-                        ifOutOctets[t].update({i: pkts})
-                    print('%s, Interface Out octets: %d' % (m.ifDescr[i], pkts))
+                        ifOutOctets[t].update({i: pkts - prevOutOctets[i]})
+                        prevOutOctets[i] = pkts
+                    print('%s, Interface Out octets: %d' % (m.ifDescr[i], ifOutOctets[t][i]))
 
             """
             The total number of octets received on the interface,
@@ -162,8 +179,9 @@ def main():
             for i, pkts in m.ifHCInOctets.items():
                 if i in ifWithAddr.keys():
                     if i not in ifInOctets[t]:
-                        ifInOctets[t].update({i: pkts})
-                    print('%s, Interface In octets: %d' % (m.ifDescr[i], pkts))
+                        ifInOctets[t].update({i: pkts - prevInOctets[i]})
+                        prevInOctets[i] = pkts
+                    print('%s, Interface In octets: %d' % (m.ifDescr[i], ifInOctets[t][i]))
 
             """
             The number of messages in the sub-queue.
@@ -174,8 +192,9 @@ def main():
             for (i, u), pkts in m.cQStatsDepth.items():
                 if i in ifWithAddr.keys():
                     if i not in ifQstats[t]:
-                        ifQstats[t].update({i: pkts})
-                    print('%s, Interface Queue Size: %d' % (m.ifDescr[i], pkts))
+                        ifQstats[t].update({i: pkts - previfQstats[i]})
+                        previfQstats[i] = pkts
+                    print('%s, Interface Queue Size: %d' % (m.ifDescr[i], ifQstats[t][i]))
 
             time.sleep(args.sinterval)
             t += args.sinterval
