@@ -2,13 +2,12 @@ import argparse
 import socket
 import struct
 import sys
-from netaddr import IPNetwork, IPAddress
+from netaddr import IPNetwork, IPAddress, IPSet
 
 
 def int_to_ipv4(addr):
     return "%d.%d.%d.%d" % \
-           (addr >> 24 & 0xff, addr >> 16 & 0xff, \
-            addr >> 8 & 0xff, addr & 0xff)
+           (addr >> 24 & 0xff, addr >> 16 & 0xff, addr >> 8 & 0xff, addr & 0xff)
 
 
 def getNetFlowData(data):
@@ -18,7 +17,7 @@ def getNetFlowData(data):
     if version == 1:
         print("NetFlow version %d:" % version)
         hformat = "!HHIII"
-        # ! - network (= big-endian), H – C unsigned short (2 bytes), I – C unsigned int (4 bytes)
+        # ! network (=big-endian), H - C unsigned short (2 bytes), I - C unsigned int (4 bytes)
         hlen = struct.calcsize(hformat)
         if len(data) < hlen:
             print("Truncated packet (header)")
@@ -30,7 +29,7 @@ def getNetFlowData(data):
 
         print(num_flows)
         fformat = "!IIIHHIIIIHHHBBBBBBI"
-        # B – C unsigned char (1 byte)
+        # B - C unsigned char (1 byte)
         flen = struct.calcsize(fformat)
 
         if len(data) - hlen != num_flows * flen:
@@ -43,7 +42,21 @@ def getNetFlowData(data):
             offset = hlen + flen * n
             fdata = data[offset:offset + flen]
             sflow = struct.unpack(fformat, fdata)
+
             flow.update({'src_addr': int_to_ipv4(sflow[0])})
+            flow.update({'dst_addr': int_to_ipv4(sflow[1])})
+            flow.update({'next_hop': int_to_ipv4(sflow[2])})
+            flow.update({'input_int_index': sflow[3]})
+            flow.update({'output_int_index': sflow[4]})
+            flow.update({'packets': sflow[5]})
+            flow.update({'bytes': sflow[6]})
+            flow.update({'start_time_of_flow': sflow[7]})
+            flow.update({'end_time_of_flow': sflow[8]})
+            flow.update({'source_port': sflow[9]})
+            flow.update({'dst_port': sflow[10]})
+            flow.update({'protocol': sflow[12]})
+            flow.update({'tos': sflow[13]})
+            flow.update({'tcp_flags': sflow[14]})
             # more flow
             flows.update({n: flow})
     else:
@@ -67,7 +80,9 @@ def main():
             nets.append(nn)
         except:
             print('%s is not a network prefix' % n)
+
     print(nets)
+
     if len(nets) == 0:
         print("No valid network prefixes.")
         sys.exit()
@@ -79,7 +94,9 @@ def main():
             router.append(rr)
         except:
             print('%s is not an IP address' % r)
+
     print(router)
+
     if len(router) == 0:
         print("No valid router IP address.")
         sys.exit()
@@ -87,17 +104,21 @@ def main():
     udp_port = args.port
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
     sock.bind(('0.0.0.0', udp_port))
+
     print("listening on '0.0.0.0':%d" % udp_port)
 
     try:
-        while 1:
-            data, addr = sock.recvfrom(8192)  # buffer size is 8192 bytes
+        while True:
+            data, addr = sock.recvfrom(8192)  # buffer size is 1024 bytes
             version, flows = getNetFlowData(data)  # version=0 reports an error!
             print('Version: %d' % version)
+
+            # to do here
+
             print(flows)
     except KeyboardInterrupt:
         sock.close()
-        print("\nDone!")
+        print("\nDone! Bye ;)")
 
 
 if __name__ == "__main__":
