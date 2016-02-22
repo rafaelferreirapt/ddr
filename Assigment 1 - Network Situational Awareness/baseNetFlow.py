@@ -5,6 +5,67 @@ import sys
 from netaddr import IPNetwork, IPAddress, IPSet
 
 
+class Table:
+
+    TM = {}
+    table_header = []
+    table_left = []
+
+    def __init__(self, nets):
+        self.table_header += nets + ['other']
+        self.table_left += nets + ['other']
+
+        for ip_src in nets:
+            for ip_dst in nets:
+                self.TM[(str(ip_src), str(ip_dst))] = {}
+                self.TM[(str(ip_src), str(ip_dst))]['flows'] = 0
+                self.TM[(str(ip_src), str(ip_dst))]['packets'] = 0
+                self.TM[(str(ip_src), str(ip_dst))]['bytes'] = 0
+
+        for ip_src in nets:
+            self.TM[(str(ip_src), 'other')] = {}
+            self.TM[(str(ip_src), 'other')]['flows'] = 0
+            self.TM[(str(ip_src), 'other')]['packets'] = 0
+            self.TM[(str(ip_src), 'other')]['bytes'] = 0
+
+        for ip_dst in nets:
+            self.TM[('other', str(ip_dst))] = {}
+            self.TM[('other', str(ip_dst))]['flows'] = 0
+            self.TM[('other', str(ip_dst))]['packets'] = 0
+            self.TM[('other', str(ip_dst))]['bytes'] = 0
+
+        self.TM[('other', 'other')] = {}
+        self.TM[('other', 'other')]['flows'] = 0
+        self.TM[('other', 'other')]['packets'] = 0
+        self.TM[('other', 'other')]['bytes'] = 0
+
+    def update(self, sn, dn, packets, bts):
+        stats = self.TM[sn, dn]
+        stats['flows'] += 1
+        stats['packets'] += packets
+        stats['bytes'] += bts
+        self.TM.update({(sn, dn): stats})
+
+    def __str__(self):
+        header_str = ('%14s ' % '')
+        for header in self.table_header:
+            header_str += ('%14s ' % header)
+
+        btm_str = header_str + '\n'
+
+        for left in self.table_left:
+            btm_str += ('%14s ' % str(left))
+            for header in self.table_header:
+                btm_str += ('%14s ' % str((self.TM[(str(left), str(header))]['flows'],
+                                          self.TM[(str(left), str(header))]['packets'],
+                                          self.TM[(str(left), str(header))]['bytes'])))
+            btm_str += '\n'
+
+        btm_str = btm_str[:-1]
+
+        return btm_str
+
+
 def int_to_ipv4(addr):
     return "%d.%d.%d.%d" % \
            (addr >> 24 & 0xff, addr >> 16 & 0xff, addr >> 8 & 0xff, addr & 0xff)
@@ -108,14 +169,44 @@ def main():
     print("listening on '0.0.0.0':%d" % udp_port)
 
     try:
+        TM = Table(nets)
+
         while True:
             data, addr = sock.recvfrom(8192)  # buffer size is 1024 bytes
             version, flows = getNetFlowData(data)  # version=0 reports an error!
-            print('Version: %d' % version)
 
-            # to do here
+            if IPAddress(addr[0]) in router:
+                num_flows = len(flows)
 
-            print(flows)
+                print('Version: %d, from %s (%d)' % (version, addr[0], num_flows))
+
+                for f in flows:
+                    if IPAddress(flows[f]['src_addr']) in IPSet(nets):
+                        source_addr = str(flows[f]['src_addr'])
+                        source_ni = [IPAddress(source_addr) in net for net in nets].index(True)
+                        source_network = str(nets[source_ni])
+                    else:
+                        source_network = 'other'
+
+                    if IPAddress(flows[f]['dst_addr']) in IPSet(nets):
+                        destination_addr = str(flows[f]['dst_addr'])
+                        destination_ni = [IPAddress(destination_addr) in net for net in nets].index(True)
+                        destination_network = str(nets[destination_ni])
+                    else:
+                        destination_network = 'other'
+
+                    print("\nUpdated at: (%s, %s)\n" % (source_network, destination_network))
+
+                    TM.update(source_network, destination_network, flows[f]['packets'], flows[f]['bytes'])
+
+                    print("------------------------------------------------------------")
+                    print(TM)
+                    print("------------------------------------------------------------")
+                    print("(flows, packets, bytes)\n\n")
+            else:
+                print('Version: %d, from %s' % (version, addr[0]))
+                print('Other router NetFlow packet')
+
     except KeyboardInterrupt:
         sock.close()
         print("\nDone! Bye ;)")
