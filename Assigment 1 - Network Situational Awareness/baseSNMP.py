@@ -94,6 +94,7 @@ def main():
             prevInOctets[i] = 0
             previfQstats[i] = 0
 
+        count = 0
 
         while True:
             print("\n=== %d Seconds passed ===" % t)
@@ -117,7 +118,11 @@ def main():
             for i, pkts in m.ifHCOutUcastPkts.items():
                 if i in ifWithAddr.keys():
                     if i not in ifOutUCastPkts[t]:
-                        ifOutUCastPkts[t].update({i: pkts - prevOutUCastPkts[i]})
+                        if count == 0:
+                            ifOutUCastPkts[t].update({i: 0})
+                        else:
+                            ifOutUCastPkts[t].update({i: pkts - prevOutUCastPkts[i]})
+
                         prevOutUCastPkts[i] = pkts
 
                     print('%s, Interface Out packets: %d' % (m.ifDescr[i], ifOutUCastPkts[t][i]))
@@ -139,7 +144,11 @@ def main():
             for i, pkts in m.ifHCInUcastPkts.items():
                 if i in ifWithAddr.keys():
                     if i not in ifInUCastPkts[t]:
-                        ifInUCastPkts[t].update({i: pkts - prevInUCastPkts[i]})
+                        if count == 0:
+                            ifInUCastPkts[t].update({i: 0})
+                        else:
+                            ifInUCastPkts[t].update({i: pkts - prevInUCastPkts[i]})
+
                         prevInUCastPkts[i] = pkts
                     print('%s, Interface In packets: %d' % (m.ifDescr[i], ifInUCastPkts[t][i]))
 
@@ -159,7 +168,11 @@ def main():
             for i, pkts in m.ifHCOutOctets.items():
                 if i in ifWithAddr.keys():
                     if i not in ifOutOctets[t]:
-                        ifOutOctets[t].update({i: pkts - prevOutOctets[i]})
+                        if count == 0:
+                            ifOutOctets[t].update({i: 0})
+                        else:
+                            ifOutOctets[t].update({i: pkts - prevOutOctets[i]})
+
                         prevOutOctets[i] = pkts
                     print('%s, Interface Out octets: %d' % (m.ifDescr[i], ifOutOctets[t][i]))
 
@@ -179,7 +192,11 @@ def main():
             for i, pkts in m.ifHCInOctets.items():
                 if i in ifWithAddr.keys():
                     if i not in ifInOctets[t]:
-                        ifInOctets[t].update({i: pkts - prevInOctets[i]})
+                        if count == 0:
+                            ifInOctets[t].update({i: 0})
+                        else:
+                            ifInOctets[t].update({i: pkts - prevInOctets[i]})
+
                         prevInOctets[i] = pkts
                     print('%s, Interface In octets: %d' % (m.ifDescr[i], ifInOctets[t][i]))
 
@@ -192,120 +209,105 @@ def main():
             for (i, u), pkts in m.cQStatsDepth.items():
                 if i in ifWithAddr.keys():
                     if i not in ifQstats[t]:
-                        ifQstats[t].update({i: pkts - previfQstats[i]})
+                        if count == 0:
+                            ifQstats[t].update({i: 0})
+                        else:
+                            ifQstats[t].update({i: pkts - previfQstats[i]})
                         previfQstats[i] = pkts
                     print('%s, Interface Queue Size: %d' % (m.ifDescr[i], ifQstats[t][i]))
 
+            plt.ion()
+
+            timeList = []
+
+            for t, value in ifOutUCastPkts.items():
+                timeList.append(int(t))
+            timeList = sorted(timeList, key=int)
+
+            for i, details in ifWithAddr.items():
+                fig = plt.figure(i, figsize=(16, 10), dpi=80)
+                fig.canvas.set_window_title(str(details["name"]) + ' ' + str(details["ip"]))
+                fig.subplots_adjust(wspace=0.23)
+
+                # ifOutUCastPkts
+                xitems = timeList
+                yitems = []
+
+                for t in timeList:
+                    yitems.append(ifOutUCastPkts[t][i])
+
+                plt.subplot(231)
+                plt.plot(xitems, yitems)
+                plt.title("Interface out")
+                plt.xlabel("time (s)")
+                plt.ylabel("Unicast packets")
+                plt.grid(True)
+
+                # ifInUCastPkts
+                xitems = timeList
+                yitems = []
+
+                for t in timeList:
+                    yitems.append(ifInUCastPkts[t][i])
+
+                plt.subplot(232)
+                plt.plot(xitems, yitems)
+                plt.title("Interface in")
+                plt.ylabel("Unicast packets")
+                plt.xlabel("time (s)")
+                plt.grid(True)
+
+                # ifOutOctets
+                xitems = timeList
+                yitems = []
+
+                for t in timeList:
+                    yitems.append(ifOutOctets[t][i])
+
+                plt.subplot(233)
+                plt.plot(xitems, yitems)
+                plt.title("Number of bytes transmitted")
+                plt.ylabel("Number of bytes")
+                plt.xlabel("time (s)")
+                plt.grid(True)
+
+                # ifInOctets
+                xitems = timeList
+                yitems = []
+
+                for t in timeList:
+                    yitems.append(ifInOctets[t][i])
+
+                plt.subplot(234)
+                plt.plot(xitems, yitems)
+                plt.title("Number of bytes received")
+                plt.ylabel("Number of bytes")
+                plt.xlabel("time (s)")
+                plt.grid(True)
+                plt.draw()
+
+                # ifQstats
+                xitems = timeList
+                yitems = []
+
+                for t in timeList:
+                    yitems.append(ifQstats[t][i])
+
+                plt.subplot(235)
+                plt.plot(xitems, yitems)
+                plt.title("The number of messages in the sub-queue.")
+                plt.ylabel("Number of messages")
+                plt.xlabel("time (s)")
+                plt.grid(True)
+                plt.draw()
             time.sleep(args.sinterval)
             t += args.sinterval
+            count += 1
 
     except KeyboardInterrupt:
         print "Finished after %d seconds..." % t
         json_save(args, ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats)
-        draw_plt(args, ifWithAddr)
-
-
-def draw_plt(args, ifWithAddr):
-    # load from json file
-    with open("router_" + args.router + ".json") as data_file:
-        content = json.load(data_file)
-
-    ifOutUCastPkts = content["ifOutUCastPkts"]
-    ifInUCastPkts = content["ifInUCastPkts"]
-    ifOutOctets = content["ifOutUCastPkts"]
-    ifInOctets = content["ifOutUCastPkts"]
-    ifQstats = content["ifOutUCastPkts"]
-    # load from json file
-
-    plt.ion()
-
-    time = []
-
-    for t, value in ifOutUCastPkts.items():
-        time.append(int(t))
-    time = sorted(time, key=int)
-
-    for i, details in ifWithAddr.items():
-        fig = plt.figure(i, figsize=(16, 10), dpi=80)
-        fig.canvas.set_window_title(str(details["name"]) + ' ' + str(details["ip"]))
-        fig.subplots_adjust(wspace=0.23)
-
-        # ifOutUCastPkts
-        xitems = time
-        yitems = []
-
-        for t in time:
-            yitems.append(ifOutUCastPkts[str(t)][str(i)])
-
-        plt.subplot(231)
-        plt.plot(xitems, yitems)
-        plt.title("Interface out")
-        plt.xlabel("time (s)")
-        plt.ylabel("Unicast packets")
-        plt.grid(True)
-
-        # ifInUCastPkts
-        xitems = time
-        yitems = []
-
-        for t in time:
-            yitems.append(ifInUCastPkts[str(t)][str(i)])
-
-        plt.subplot(232)
-        plt.plot(xitems, yitems)
-        plt.title("Interface in")
-        plt.ylabel("Unicast packets")
-        plt.xlabel("time (s)")
-        plt.grid(True)
-
-        # ifOutOctets
-        xitems = time
-        yitems = []
-
-        for t in time:
-            yitems.append(ifOutOctets[str(t)][str(i)])
-
-        plt.subplot(233)
-        plt.plot(xitems, yitems)
-        plt.title("Number of bytes transmitted")
-        plt.ylabel("Number of bytes")
-        plt.xlabel("time (s)")
-        plt.grid(True)
-
-        # ifInOctets
-        xitems = time
-        yitems = []
-
-        for t in time:
-            yitems.append(ifInOctets[str(t)][str(i)])
-
-        plt.subplot(234)
-        plt.plot(xitems, yitems)
-        plt.title("Number of bytes received")
-        plt.ylabel("Number of bytes")
-        plt.xlabel("time (s)")
-        plt.grid(True)
-        plt.draw()
-
-        # ifQstats
-        xitems = time
-        yitems = []
-
-        for t in time:
-            yitems.append(ifQstats[str(t)][str(i)])
-
-        plt.subplot(235)
-        plt.plot(xitems, yitems)
-        plt.title("The number of messages in the sub-queue.")
-        plt.ylabel("Number of messages")
-        plt.xlabel("time (s)")
-        plt.grid(True)
-        plt.draw()
-
-    sys.stdout.close()
-    while True:
-        continue
-
+        #draw_plt(args, ifWithAddr)
 
 def json_save(args, ifWithAddr, ifOutUCastPkts, ifInUCastPkts, ifOutOctets, ifInOctets, ifQstats):
     save_object = {"ifWithAddr": ifWithAddr,

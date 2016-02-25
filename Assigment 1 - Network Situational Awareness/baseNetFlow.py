@@ -120,6 +120,57 @@ def getNetFlowData(data):
             flow.update({'tcp_flags': sflow[14]})
             # more flow
             flows.update({n: flow})
+
+    elif version == 5:
+        print("NetFlow version %d:" % version)
+        hformat = "!HHIIIIBBH"
+        # ! network (=big-endian), H - C unsigned short (2 bytes), I - C unsigned int (4 bytes)
+        hlen = struct.calcsize(hformat)
+        if len(data) < hlen:
+            print("Truncated packet (header)")
+            return 0, 0
+        sheader = struct.unpack(hformat, data[:hlen])
+        version = sheader[0]
+        num_flows = sheader[1]
+        # more header
+
+        print(num_flows)
+        fformat = "!IIIHHIIIIHHBBBBHHBBH"
+        # B - C unsigned char (1 byte)
+        flen = struct.calcsize(fformat)
+
+        if len(data) - hlen != num_flows * flen:
+            print("Packet truncated (flows data)")
+            return 0, 0
+
+        flows = {}
+        for n in range(num_flows):
+            flow = {}
+            offset = hlen + flen * n
+            fdata = data[offset:offset + flen]
+            sflow = struct.unpack(fformat, fdata)
+
+            flow.update({'src_addr': int_to_ipv4(sflow[0])})
+            flow.update({'dst_addr': int_to_ipv4(sflow[1])})
+            flow.update({'next_hop': int_to_ipv4(sflow[2])})
+            flow.update({'input_int_index': sflow[3]})
+            flow.update({'output_int_index': sflow[4]})
+            flow.update({'packets': sflow[5]})
+            flow.update({'bytes': sflow[6]})
+            flow.update({'start_time_of_flow': sflow[7]})
+            flow.update({'end_time_of_flow': sflow[8]})
+            flow.update({'source_port': sflow[9]})
+            flow.update({'dst_port': sflow[10]})
+            flow.update({'tcp_flags': sflow[12]})
+            flow.update({'ip_protocol': sflow[13]})
+            flow.update({'TOS': sflow[14]})
+            flow.update({'src_AS': sflow[15]})
+            flow.update({'dst_AS': sflow[16]})
+            flow.update({'src_netmask_len': sflow[17]})
+            flow.update({'dst_netmask_len': sflow[18]})
+
+            # more flow
+            flows.update({n: flow})
     else:
         print("NetFlow version %d not supported!" % version)
 
