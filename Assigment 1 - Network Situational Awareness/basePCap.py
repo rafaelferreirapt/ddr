@@ -3,28 +3,31 @@ import argparse
 import pyshark
 from netaddr import IPNetwork, IPAddress, IPSet
 import matplotlib.pyplot as plt
+from threading import Lock
 
-npkts = 0
+# npkts = 0
 
 timestamp_init = 0
-timestamp_interval = 0.15
+timestamp_interval = 0.1
 
 bytes_upload = [0]
 bytes_upload_idx = 0
 bytes_download = [0]
 bytes_download_idx = 0
-time = [0]
-last_time = 0
 
 graph_time = 0
-graph_interval = 5
+graph_interval = 0.5
 
 
 def pkt_callback(pkt):
-    global scnets, graph, graph_time, graph_interval
-    global ssnets, timestamp_init, last_time
-    global npkts, time, bytes_upload_idx, bytes_download_idx
-    global timestamp_interval, bytes_download, bytes_upload
+    # atomic lock
+    lock = Lock()
+    lock.acquire()
+    # atomic lock
+
+    global scnets, ssnets#, npkts
+    global graph_time, graph_interval, timestamp_init, timestamp_interval
+    global bytes_upload_idx, bytes_upload, bytes_download_idx, bytes_download
 
     if IPAddress(pkt.ip.src) in scnets | ssnets and IPAddress(pkt.ip.dst) in scnets | ssnets:
         timestamp = float(pkt.sniff_timestamp)
@@ -41,42 +44,26 @@ def pkt_callback(pkt):
             if interval_num == 0:
                 bytes_upload[bytes_upload_idx] += pkt_len
             else:
-                for i in range(bytes_upload_idx+1, interval_num):
+                for i in range(bytes_upload_idx + 1, interval_num):
                     bytes_upload.append(0)
-                    time.append(last_time + 0.15)
-                    last_time = last_time + 0.15
 
                 bytes_upload_idx = interval_num
-                bytes_upload.append(0)
-                bytes_upload[bytes_upload_idx] = pkt_len
-                time.append(last_time + 0.15)
-                last_time = last_time + 0.15
+                bytes_upload.append(pkt_len)
 
-        elif IPAddress(pkt.ip.src) in ssnets:
+        # elif IPAddress(pkt.ip.src) in ssnets:
             # check the interval
-            bytes_download[bytes_upload_idx] += pkt_len
+            # bytes_download[bytes_upload_idx] += pkt_len
 
         # draw plots
-        if round(((timestamp - graph_time) / graph_interval), 0) > 0:
-            plt.ion()
-            plt.plot(time, bytes_upload)
-            plt.title("YouTube")
-            plt.xlabel("time (s)")
-            plt.ylabel("Up/Down Mbytes")
-            plt.draw()
+        #if round(((timestamp - graph_time) / graph_interval), 0) > 0:
+        plt.plot([round(i * timestamp_interval, 2) for i in range(0, len(bytes_upload))], bytes_upload)
+        # graph_time = timestamp
 
-            graph_time = timestamp
+        # npkts = npkts + 1
 
-        npkts = npkts + 1
-
-        # if pkt.ip.proto == '17':
-        #     print('%s: IP packet from %s to %s (UDP:%s) %s' % (
-        #     pkt.sniff_timestamp, pkt.ip.src, pkt.ip.dst, pkt.udp.dstport, pkt.ip.len))
-        # elif pkt.ip.proto == '6':
-        #     print('%s: IP packet from %s to %s (TCP:%s) %s' % (
-        #     pkt.sniff_timestamp, pkt.ip.src, pkt.ip.dst, pkt.tcp.dstport, pkt.ip.len))
-        # else:
-        #     print('%s: IP packet from %s to %s (other) %s' % (pkt.sniff_timestamp, pkt.ip.src, pkt.ip.dst, pkt.ip.len))
+        # unlock
+        lock.release()
+        # now it's safe
 
 
 def main():
@@ -127,11 +114,23 @@ def main():
     cint = args.interface
     print('Filter: %s on %s' % (cfilter, cint))
     try:
+        # plt
+        plt.ion()
+        plt.title("YouTube")
+        plt.xlabel("time (s)")
+        plt.ylabel("Up/Down Mbytes")
+        plt.grid(True)
+        plt.show()
+
+        while True:
+            continue
+
         capture = pyshark.LiveCapture(interface=cint, bpf_filter=cfilter)
         capture.apply_on_packets(pkt_callback)
     except KeyboardInterrupt:
-        global npkts
-        print('\n%d packets captured! Done!\n' % npkts)
+        pass
+        # global npkts
+        # print('\n%d packets captured! Done!\n' % npkts)
 
 
 if __name__ == '__main__':
