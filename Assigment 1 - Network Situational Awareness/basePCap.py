@@ -5,6 +5,13 @@ from netaddr import IPNetwork, IPAddress, IPSet
 import matplotlib.pyplot as plt
 from threading import Lock
 
+"""
+To use in the ubuntu server:
+sudo apt-get install -y firefox tshark
+bridge the wifi to a vm interface
+configure as static with another ip of the network
+"""
+
 # npkts = 0
 
 timestamp_init = 0
@@ -16,7 +23,7 @@ bytes_download = [0]
 bytes_download_idx = 0
 
 graph_time = 0
-graph_interval = 0.5
+graph_interval = 1
 
 
 def pkt_callback(pkt):
@@ -25,13 +32,13 @@ def pkt_callback(pkt):
     lock.acquire()
     # atomic lock
 
-    global scnets, ssnets#, npkts
+    global scnets, ssnets  # , npkts
     global graph_time, graph_interval, timestamp_init, timestamp_interval
     global bytes_upload_idx, bytes_upload, bytes_download_idx, bytes_download
 
     if IPAddress(pkt.ip.src) in scnets | ssnets and IPAddress(pkt.ip.dst) in scnets | ssnets:
         timestamp = float(pkt.sniff_timestamp)
-        pkt_len = int(pkt.ip.len)
+        pkt_len = bytesto(pkt.ip.len, 'm')
 
         if timestamp_init == 0:
             timestamp_init = timestamp
@@ -49,18 +56,18 @@ def pkt_callback(pkt):
 
                 bytes_upload_idx = interval_num
                 bytes_upload.append(pkt_len)
-
-        # elif IPAddress(pkt.ip.src) in ssnets:
-            # check the interval
-            # bytes_download[bytes_upload_idx] += pkt_len
+                # elif IPAddress(pkt.ip.src) in ssnets:
+                # check the interval
+                # bytes_download[bytes_upload_idx] += pkt_len
 
         # draw plots
-        #if round(((timestamp - graph_time) / graph_interval), 0) > 0:
-        plt.plot([round(i * timestamp_interval, 2) for i in range(0, len(bytes_upload))], bytes_upload)
-        # graph_time = timestamp
+        if round(((timestamp - graph_time) / graph_interval), 0) > 0:
+            plt.plot([round(i * timestamp_interval, 2) for i in range(0, len(bytes_upload))], bytes_upload)
+            plt.draw()
+            plt.show()
+            graph_time = timestamp
 
         # npkts = npkts + 1
-
         # unlock
         lock.release()
         # now it's safe
@@ -115,6 +122,7 @@ def main():
     print('Filter: %s on %s' % (cfilter, cint))
     try:
         # plt
+        plt.ioff()
         plt.ion()
         plt.title("YouTube")
         plt.xlabel("time (s)")
@@ -122,15 +130,22 @@ def main():
         plt.grid(True)
         plt.show()
 
-        while True:
-            continue
-
         capture = pyshark.LiveCapture(interface=cint, bpf_filter=cfilter)
         capture.apply_on_packets(pkt_callback)
     except KeyboardInterrupt:
         pass
         # global npkts
         # print('\n%d packets captured! Done!\n' % npkts)
+
+
+# https://gist.github.com/shawnbutts/3906915
+def bytesto(bytes, to, bsize=1024):
+    a = {'k': 1, 'm': 2, 'g': 3, 't': 4, 'p': 5, 'e': 6}
+    r = float(bytes)
+    for i in range(a[to]):
+        r /= bsize
+
+    return r
 
 
 if __name__ == '__main__':
