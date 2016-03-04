@@ -19,7 +19,7 @@ configure as static with another ip of the network
 # npkts = 0
 
 timestamp_init = 0
-timestamp_interval = 0.1
+timestamp_interval = 1
 timestamp_interval_graph = 1
 
 bytes_upload = {}
@@ -69,7 +69,7 @@ def pkt_callback(pkt):
 
                 if interval_num == (len(bytes_upload[network]["bytes"])-1):
                     idx = bytes_upload[network]["idx"]
-                    bytes_upload[network][idx] += pkt_len
+                    bytes_upload[network]["bytes"][idx] += pkt_len
                 else:
                     bytes_upload[network]["idx"] += 1
                     bytes_upload[network]["bytes"].append(pkt_len)
@@ -96,7 +96,7 @@ def pkt_callback(pkt):
 
                 if interval_num == (len(bytes_download[network]["bytes"])-1):
                     idx = bytes_download[network]["idx"]
-                    bytes_download[network][idx] += pkt_len
+                    bytes_download[network]["bytes"][idx] += pkt_len
                 else:
                     bytes_download[network]["idx"] += 1
                     bytes_download[network]["bytes"].append(pkt_len)
@@ -105,6 +105,8 @@ def pkt_callback(pkt):
         if math.trunc((timestamp - graph_time) / timestamp_interval_graph) > 0:
             plot_show()
             graph_time = timestamp
+            print bytes_upload
+            print bytes_download
 
         # npkts = npkts + 1
         # unlock
