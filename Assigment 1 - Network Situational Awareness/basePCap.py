@@ -19,7 +19,8 @@ configure as static with another ip of the network
 # npkts = 0
 
 timestamp_init = 0
-timestamp_interval = 20
+timestamp_interval = 0.1
+timestamp_interval_graph = 1
 
 bytes_upload = {}
 idx = 0
@@ -34,8 +35,8 @@ def pkt_callback(pkt):
     lock.acquire()
     # atomic lock
 
-    global scnets, ssnets  # , npkts
-    global graph_time, timestamp_init, timestamp_interval
+    global scnets, ssnets, snets, cnets  # , npkts
+    global graph_time, timestamp_init, timestamp_interval, timestamp_interval_graph
     global bytes_upload, idx, bytes_download
 
     if IPAddress(pkt.ip.src) in scnets | ssnets and IPAddress(pkt.ip.dst) in scnets | ssnets:
@@ -47,40 +48,61 @@ def pkt_callback(pkt):
             graph_time = timestamp
 
         if IPAddress(pkt.ip.src) in scnets:
+            # what is the network
+            for network in cnets:
+                if IPAddress(pkt.ip.src) in network:
+                    break
+
+            network = str(network)
+
             # check the interval
             interval_num = int(math.trunc((timestamp - timestamp_init) / timestamp_interval))
 
             if interval_num == 0:
-                bytes_upload[pkt.ip.src]["bytes"][bytes_upload[pkt.ip.src]["idx"]] += pkt_len
+                bytes_upload[network]["bytes"][bytes_upload[network]["idx"]] += pkt_len
             else:
-                for i in range(bytes_upload[pkt.ip.src]["idx"] + 1, interval_num):
-                    bytes_upload[pkt.ip.src]["bytes"].append(0)
+                idx = bytes_upload[network]["idx"] + 1
 
-                if interval_num == (len(bytes_upload)-1):
-                    bytes_upload[bytes_upload[pkt.ip.src]["idx"]] += pkt_len
+                for i in range(idx, interval_num):
+                    bytes_upload[network]["idx"] += 1
+                    bytes_upload[network]["bytes"].append(0)
+
+                if interval_num == (len(bytes_upload[network]["bytes"])-1):
+                    idx = bytes_upload[network]["idx"]
+                    bytes_upload[network][idx] += pkt_len
                 else:
-                    bytes_upload[pkt.ip.src]["idx"] = interval_num
-                    bytes_upload[pkt.ip.src]["bytes"].append(pkt_len)
+                    bytes_upload[network]["idx"] += 1
+                    bytes_upload[network]["bytes"].append(pkt_len)
 
         elif IPAddress(pkt.ip.src) in ssnets:
+            # what is the network
+            for network in snets:
+                if IPAddress(pkt.ip.src) in network:
+                    break
+
+            network = str(network)
+
             # check the interval
             interval_num = int(math.trunc((timestamp - timestamp_init) / timestamp_interval))
 
             if interval_num == 0:
-                bytes_download[pkt.ip.src]["bytes"][bytes_download[pkt.ip.src]["idx"]] += pkt_len
+                bytes_download[network]["bytes"][bytes_download[network]["idx"]] += pkt_len
             else:
-                for i in range(bytes_download[pkt.ip.src]["idx"] + 1, interval_num):
-                    bytes_download[pkt.ip.src]["bytes"].append(0)
+                idx = bytes_download[network]["idx"] + 1
 
-                if interval_num == (len(bytes_download)-1):
-                    bytes_download[bytes_download[pkt.ip.src]["idx"]] += pkt_len
+                for i in range(idx, interval_num):
+                    bytes_download[network]["idx"] += 1
+                    bytes_download[network]["bytes"].append(0)
+
+                if interval_num == (len(bytes_download[network]["bytes"])-1):
+                    idx = bytes_download[network]["idx"]
+                    bytes_download[network][idx] += pkt_len
                 else:
-                    bytes_download[pkt.ip.src]["idx"] = interval_num
-                    bytes_download[pkt.ip.src]["bytes"].append(pkt_len)
-            # bytes_download[bytes_upload_idx] += pkt_len
+                    bytes_download[network]["idx"] += 1
+                    bytes_download[network]["bytes"].append(pkt_len)
 
         # draw plots
-        if math.trunc((timestamp - graph_time) / timestamp_interval) > 0:
+        if math.trunc((timestamp - graph_time) / timestamp_interval_graph) > 0:
             plot_show()
             graph_time = timestamp
 
@@ -99,6 +121,11 @@ def main():
     parser.add_argument('-u', '--udpport', nargs='?', help='service UDP port (or range)')
     args = parser.parse_args()
 
+    plt.ioff()
+    plt.ion()
+
+    global scnets, cnets, snets
+
     cnets = []
     for n in args.cnet:
         try:
@@ -110,7 +137,7 @@ def main():
     if len(cnets) == 0:
         print("No valid client network prefixes.")
         sys.exit()
-    global scnets
+
     scnets = IPSet(cnets)
 
     snets = []
@@ -139,9 +166,9 @@ def main():
     print('Filter: %s on %s' % (cfilter, cint))
     try:
         # fill the dictionary
-        for cnet in scnets:
+        for cnet in cnets:
             bytes_upload[str(cnet)] = {"bytes": [0], "idx": 0}
-        for snet in ssnets:
+        for snet in snets:
             bytes_download[str(snet)] = {"bytes": [0], "idx": 0}
         plot_show()
         capture = pyshark.LiveCapture(interface=cint, bpf_filter=cfilter)
@@ -156,9 +183,9 @@ def plot_show():
     global scnets
 
     # plt
-    plt.ioff()
-    plt.ion()
+    plt.figure(1)
     plt.gcf().clear()
+    plt.show()
 
     plt.xlabel("Time (s)")
     plt.ylabel("Mbytes")
@@ -166,20 +193,20 @@ def plot_show():
 
     net = None
 
-    for cnet in scnets:
+    for cnet in cnets:
         net = cnet
         break
 
     time_x = [math.trunc(i * timestamp_interval) for i in range(0, len(bytes_upload[str(net)]["bytes"]))]
 
-    for cnet in ssnets:
+    for cnet in snets:
         net = cnet
         break
     time_y = [math.trunc(i * timestamp_interval) for i in range(0, len(bytes_download[str(net)]["bytes"]))]
 
-    for cnet in scnets:
+    for cnet in cnets:
         plt.plot(time_x, bytes_upload[str(cnet)]["bytes"], label=str(cnet) + " upload")
-    for snet in ssnets:
+    for snet in snets:
         plt.plot(time_y, bytes_download[str(snet)]["bytes"], label=str(snet) + " download")
 
     plt.legend(bbox_to_anchor=(1, 1), bbox_transform=plt.gcf().transFigure)
