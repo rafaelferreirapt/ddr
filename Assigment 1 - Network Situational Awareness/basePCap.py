@@ -19,8 +19,8 @@ configure as static with another ip of the network
 # npkts = 0
 
 timestamp_init = 0
-timestamp_interval = 1
-timestamp_interval_graph = 1
+timestamp_interval = 0.5
+timestamp_interval_graph = 5
 
 bytes_upload = {}
 idx = 0
@@ -100,6 +100,30 @@ def pkt_callback(pkt):
                 else:
                     bytes_download[network]["idx"] += 1
                     bytes_download[network]["bytes"].append(pkt_len)
+
+        # check the intervals
+        max_idx = 0
+
+        for cnet in cnets:
+            if max_idx < bytes_upload[str(cnet)]["idx"]:
+                max_idx = bytes_upload[str(cnet)]["idx"]
+
+        for snet in snets:
+            if max_idx < bytes_download[str(snet)]["idx"]:
+                max_idx = bytes_download[str(snet)]["idx"]
+
+        # interval append
+        for cnet in cnets:
+            idx = bytes_upload[str(cnet)]["idx"] + 1
+            for i in range(idx, max_idx+1):
+                bytes_upload[str(cnet)]["idx"] += 1
+                bytes_upload[str(cnet)]["bytes"].append(0)
+
+        for snet in snets:
+            idx = bytes_download[str(snet)]["idx"] + 1
+            for i in range(idx, max_idx+1):
+                bytes_download[str(snet)]["idx"] += 1
+                bytes_download[str(snet)]["bytes"].append(0)
 
         # draw plots
         if math.trunc((timestamp - graph_time) / timestamp_interval_graph) > 0:
