@@ -28,6 +28,9 @@ bytes_download = {}
 
 graph_time = 0
 
+targetDownload = open("Download", 'w+')
+targetUpload = open("Upload", 'w+')
+
 
 def pkt_callback(pkt):
     # atomic lock
@@ -37,7 +40,7 @@ def pkt_callback(pkt):
 
     global scnets, ssnets, snets, cnets  # , npkts
     global graph_time, timestamp_init, timestamp_interval, timestamp_interval_graph
-    global bytes_upload, idx, bytes_download
+    global bytes_upload, idx, bytes_download, network
 
     if IPAddress(pkt.ip.src) in scnets | ssnets and IPAddress(pkt.ip.dst) in scnets | ssnets:
         timestamp = float(pkt.sniff_timestamp)
@@ -200,7 +203,20 @@ def main():
         capture = pyshark.LiveCapture(interface=cint, bpf_filter=cfilter)
         capture.apply_on_packets(pkt_callback)
     except KeyboardInterrupt:
-        pass
+        targetUpload.write("0")
+        targetUpload.write("\n")
+        targetDownload.write("0")
+        targetDownload.write("\n")
+
+        for cnet in cnets:
+            for i in range(0, len(bytes_upload[str(cnet)]["bytes"])):
+                targetUpload.write(str(bytes_upload[str(cnet)]["bytes"][i]))
+                targetUpload.write("\n")
+        for snet in snets:
+            for i in range(0, len(bytes_download[str(snet)]["bytes"])):
+                targetDownload.write(str(bytes_download[str(snet)]["bytes"][i]))
+                targetDownload.write("\n")
+
         # global npkts
         # print('\n%d packets captured! Done!\n' % npkts)
 
