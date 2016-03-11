@@ -17,13 +17,13 @@ def waitforEnter():
         input("Press ENTER to continue.")
 
 
-def hellingerDist(pdf1, pdf2):
+def hellingerDist(p, q):
     return np.sqrt(np.sum((np.sqrt(p) - np.sqrt(q)) ** 2)) / np.sqrt(2)
 
 
 plt.ion()
 # -1- #
-data1 = np.loadtxt('data1')
+data1 = np.loadtxt('../dataFiles/data1')
 # for dataset 0 (from 0 to 39)
 plt.figure(1)
 plt.plot(data1[:, 0], marker='s', c='blue', label='dataset 0')
