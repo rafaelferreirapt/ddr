@@ -21,28 +21,27 @@ def waitforEnter():
 
 plt.ion()
 data1 = np.loadtxt('../dataFiles/data1')
-"""
+
 toShow = 1
 plt.figure(0)
 
 for i in range(0, nServices):
     if toShow == 6:
         plt.show()
-        # waitforEnter()
+        waitforEnter()
         plt.figure(i / 5)
         toShow = 1
 
     plt.subplot(5, 1, toShow)
     toShow = toShow + 1
-    # for dataset 0 (from 0 to 39)
     plt.plot(data1[:, i], marker='s', label='dataset ' + str(i))
 
 plt.show()
-"""
+
 # our profile
 
 plt.figure(10)
-# waitforEnter()
+waitforEnter()
 data2_download = np.loadtxt('../dataFiles/Download')
 data2_download *= 1048576 # convert to bytes
 
