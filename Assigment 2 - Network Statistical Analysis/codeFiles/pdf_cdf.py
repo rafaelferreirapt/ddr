@@ -38,38 +38,32 @@ for i in xrange(260, 600+260, 2):
 data2_download = data2_download_tmp
 
 # ex 4
-"""
 # for dataset 0 (from 0 to 39)
+
+plt.figure(1)
 
 for i in range(0, nServices):
     pdf, bins = np.histogram(data1[:, i], bins=50, density=True)
     dbin = np.diff(bins)[0]
     cdf = np.cumsum(pdf) * dbin
     x = bins[:-1]
-    plt.figure(1)
-    plt.plot(x, pdf, marker='s', c='blue', label='dataset 0 PDF')
+    plt.plot(x, pdf, marker='s', c='blue', label='dataset '+str(i)+' PDF')
+    plt.plot(x, cdf, marker='s', c='blue', label='dataset '+str(i)+' CDF')
     plt.show()
-
-    plt.figure(2)
-    plt.plot(x, cdf, marker='s', c='blue', label='dataset 0 CDF')
-    plt.show()
-
-    waitforEnter()
 
 # for our profile pdf and cdf
 pdf, bins = np.histogram(data2_download, bins=50, density=True)
 dbin = np.diff(bins)[0]
 cdf = np.cumsum(pdf) * dbin
 x = bins[:-1]
-plt.figure(1)
-plt.plot(x, pdf, marker='s', c='blue', label='dataset 0 PDF')
+plt.plot(x, pdf, marker='s', c='red', label='dataset our PDF')
 plt.show()
 
-plt.figure(2)
-plt.plot(x, cdf, marker='s', c='blue', label='dataset 0 CDF')
+plt.plot(x, cdf, marker='s', c='red', label='dataset our CDF')
 plt.show()
 
 waitforEnter()
+"""
 # ex 5
 # for dataset 0 (from 0 to 39)
 
