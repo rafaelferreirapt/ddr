@@ -1,9 +1,6 @@
 import numpy as np
 import scipy.stats as stats
-import scipy.signal as signal
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
-import time
 import sys
 import warnings
 
