@@ -29,9 +29,9 @@ data2_download *= 1048576  # convert to bytes
 data2_download_tmp = []
 
 # group by 2
-for i in xrange(260, 600+260, 2):
+for i in xrange(260, 600 + 260, 2):
     if i < len(data2_download) - 1:
-        data2_download_tmp += [data2_download[i] + data2_download[i+1]]
+        data2_download_tmp += [data2_download[i] + data2_download[i + 1]]
     else:
         break
 
@@ -122,7 +122,7 @@ for i in range(0, nServices):
     plt.show()
     waitforEnter()
 
-"""
+
 # ex 6
 def hellingerDist(pdf1, pdf2):
     return np.sqrt(np.sum((np.sqrt(pdf1) - np.sqrt(pdf2)) ** 2)) / np.sqrt(2)
@@ -138,13 +138,13 @@ C = np.zeros((41, 41))
 A = np.zeros((41, 41))
 
 # for dataset 0 (from 0 to 39)
-for i in range(0, nServices+1):
+for i in range(0, nServices + 1):
     if i == nServices:
         np_data_1 = data2_download
     else:
         np_data_1 = data1[:, i]
 
-    for x in range(0, nServices+1):
+    for x in range(0, nServices + 1):
         if x == nServices:
             np_data_2 = data2_download
         else:
@@ -181,9 +181,42 @@ for i in range(0, nServices):
 plt.plot(B[0, :], marker='s', c='blue')
 
 fig = plt.figure(7)
-fig.suptitle('ALGO', fontsize=14)
+fig.suptitle("Kolmogorov-Smirnov test", fontsize=14)
 plt.pcolormesh(A)
 plt.show()
+
+# ex 8
+data2 = np.loadtxt('../dataFiles/data2')
+plt.figure(45)
+pdf, x, y = np.histogram2d(data1[:, 0], data2[:, 0], bins=10)
+xx, yy = np.meshgrid(x, y)
+plt.pcolormesh(xx, yy, pdf)
+plt.show()
+
+plt.figure(145)
+pdf, x, y = np.histogram2d(data1[:, 20], data2[:, 20], bins=10)
+xx, yy = np.meshgrid(x, y)
+plt.pcolormesh(xx, yy, pdf)
+plt.show()
+
+waitforEnter()
+"""
+
+# -9- #
+plt.figure(46)
+data1All = np.loadtxt('../dataFiles/data1All')
+
+for a in range(20, 501, 20):
+    plt.clf()
+    Agg = np.sum(data1All[:, 0:a], axis=1)
+    pdf, x = np.histogram(Agg, bins=20, density=True)
+    m = np.mean(Agg)
+    std = np.std(Agg)  # standard deviation = sqrt( variance )
+    plt.plot(x[:-1], pdf, 'k', label='empirical PDF (' + str(a) + ' users)')
+    plt.plot(x, mlab.normpdf(x, m, std), 'r', label='inferred Gaussian PDF')
+    plt.show()
+    plt.legend()
+    waitforEnter()
 
 # End
 waitforEnter()
