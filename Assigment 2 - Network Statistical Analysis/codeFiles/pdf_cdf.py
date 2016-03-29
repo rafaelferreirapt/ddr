@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as stats
-import scipy.signal as signal
 import matplotlib.mlab as mlab
+import scipy.signal as signal
 import matplotlib.pyplot as plt
 import time
 import sys
@@ -200,7 +200,6 @@ plt.pcolormesh(xx, yy, pdf)
 plt.show()
 
 waitforEnter()
-"""
 
 # -9- #
 plt.figure(46)
@@ -217,6 +216,64 @@ for a in range(20, 501, 20):
     plt.show()
     plt.legend()
     waitforEnter()
+
+# -10- #
+plt.figure(47)
+traff = np.loadtxt('../dataFiles/traff')
+C = abs(np.corrcoef(traff, rowvar=0))
+plt.pcolormesh(C)
+plt.show()
+
+waitforEnter()
+
+# -11- #
+# for dataset 2
+plt.figure(48)
+x = data1[:, 2]
+lag = np.arange(0, 100, 1)
+xcorr = np.zeros(100)
+xcorr[0] = np.correlate(x, x)
+for l in lag[1:]:
+    xcorr[l] = np.correlate(x[:-l], x[l:])
+plt.plot(lag, xcorr)
+plt.show()
+
+# waitforEnter()
+
+"""
+# -12- #
+# for dataset 2 (with modulus-squared of FFT)
+plt.figure(49)
+x = data1[:, 2]
+fft = np.fft.fft(x)
+psd = abs(fft) ** 2
+plt.plot(psd[:50])
+plt.show()
+# for dataset 2 (with Welch's method )
+f, psd = signal.periodogram(x)
+plt.plot(1 / f[:50], psd[:50])
+plt.show()
+
+waitforEnter()
+
+"""
+# -13- #
+import scalogram
+
+x = data1[:, 2]
+scales = np.arange(1, 50)
+plt.ion()
+plt.figure(50)
+cwt = scalogram.CWTfft(x, scales)
+plt.imshow(abs(cwt), cmap=plt.cm.Blues, aspect='auto')
+plt.show()
+plt.figure(51)
+S, scales = scalogram.scalogramCWT(x, scales)
+plt.plot(scales, S)
+plt.show()
+
+waitforEnter()
+"""
 
 # End
 waitforEnter()
