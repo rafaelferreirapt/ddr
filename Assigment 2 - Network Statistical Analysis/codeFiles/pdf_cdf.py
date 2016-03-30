@@ -36,7 +36,7 @@ for i in xrange(260, 600 + 260, 2):
         break
 
 data2_download = data2_download_tmp
-"""
+
 # ex 4
 # for dataset 0 (from 0 to 39)
 
@@ -89,6 +89,7 @@ plt.show()
 
 waitforEnter()
 
+"""
 # ex 5
 
 # for dataset 0 (from 0 to 39)
@@ -243,7 +244,6 @@ plt.show()
 # install:
 sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
 sudo pip install scipy --upgrade
-"""
 # -12- #
 # for dataset 2 (with modulus-squared of FFT)
 plt.figure(49)
@@ -259,7 +259,6 @@ plt.show()
 
 waitforEnter()
 
-"""
 # -13- #
 import scalogram
 
