@@ -1,7 +1,7 @@
 import numpy as np
-import scipy.stats as stats
+from scipy import stats
 import matplotlib.mlab as mlab
-import scipy.signal as signal
+from scipy.signal import periodogram
 import matplotlib.pyplot as plt
 import time
 import sys
@@ -36,7 +36,7 @@ for i in xrange(260, 600 + 260, 2):
         break
 
 data2_download = data2_download_tmp
-"""
+
 # ex 4
 # for dataset 0 (from 0 to 39)
 
@@ -89,6 +89,7 @@ plt.show()
 
 waitforEnter()
 
+"""
 # ex 5
 
 # for dataset 0 (from 0 to 39)
@@ -240,7 +241,9 @@ plt.show()
 
 # waitforEnter()
 
-"""
+# install:
+sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
+sudo pip install scipy --upgrade
 # -12- #
 # for dataset 2 (with modulus-squared of FFT)
 plt.figure(49)
@@ -250,13 +253,12 @@ psd = abs(fft) ** 2
 plt.plot(psd[:50])
 plt.show()
 # for dataset 2 (with Welch's method )
-f, psd = signal.periodogram(x)
+f, psd = periodogram(x)
 plt.plot(1 / f[:50], psd[:50])
 plt.show()
 
 waitforEnter()
 
-"""
 # -13- #
 import scalogram
 
