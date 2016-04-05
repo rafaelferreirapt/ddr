@@ -37,6 +37,7 @@ for i in xrange(260, 600 + 260, 2):
 
 data2_download = data2_download_tmp
 
+"""
 # ex 4
 # for dataset 0 (from 0 to 39)
 
@@ -89,7 +90,6 @@ plt.show()
 
 waitforEnter()
 
-"""
 # ex 5
 
 # for dataset 0 (from 0 to 39)
@@ -104,6 +104,7 @@ for i in range(0, nServices):
     lp = [0, max(Pr0[-1], Pr1[-1])]
     plt.plot(lp, lp, c='red')
     plt.show()
+    plt.savefig("../imagens/qq_plot_e_pp_plot/qq_plot_"+str(i)+".png")
 
     # P-P plot for dataset 0 and dataset 1
 
@@ -121,8 +122,8 @@ for i in range(0, nServices):
     lp = [min(cdf0[0], cdf1[0]), 1]
     plt.plot(lp, lp, c='red')
     plt.show()
+    plt.savefig("../imagens/qq_plot_e_pp_plot/pp_plot_"+str(i)+".png")
     waitforEnter()
-
 
 # ex 6
 def hellingerDist(pdf1, pdf2):
@@ -167,6 +168,7 @@ fig = plt.figure(5)
 fig.suptitle('Relative distances between PDFs using Hellinger distance', fontsize=14)
 plt.pcolormesh(C)
 plt.show()
+plt.savefig("../imagens/hellinger_distance/Relative_distances_between_PDFs_using_Hellinger_distance.png")
 
 fig = plt.figure(6)
 fig.suptitle('Relative distances between PDFs using Hellinger distance', fontsize=14)
@@ -180,28 +182,27 @@ for i in range(0, nServices):
     B[0, i] = hellingerDist(pdf0, pdf1)
 
 plt.plot(B[0, :], marker='s', c='blue')
+plt.savefig("../imagens/hellinger_distance/Relative_distances_between_PDFs_using_Hellinger_distance_plot.png")
 
 fig = plt.figure(7)
 fig.suptitle("Kolmogorov-Smirnov test", fontsize=14)
 plt.pcolormesh(A)
 plt.show()
+plt.savefig("../imagens/hellinger_distance/Kolmogorov-Smirnov_test.png")
 
 # ex 8
 data2 = np.loadtxt('../dataFiles/data2')
 plt.figure(45)
-pdf, x, y = np.histogram2d(data1[:, 0], data2[:, 0], bins=10)
-xx, yy = np.meshgrid(x, y)
-plt.pcolormesh(xx, yy, pdf)
-plt.show()
 
-plt.figure(145)
-pdf, x, y = np.histogram2d(data1[:, 20], data2[:, 20], bins=10)
-xx, yy = np.meshgrid(x, y)
-plt.pcolormesh(xx, yy, pdf)
-plt.show()
+for i in range(0, 40):
+    pdf, x, y = np.histogram2d(data1[:, i], data2[:, i], bins=10)
+    xx, yy = np.meshgrid(x, y)
+    plt.pcolormesh(xx, yy, pdf)
+    plt.show()
+    plt.savefig("../imagens/Multivariate_Distributions/histogram2d_serv_"+str(i)+".png")
 
 waitforEnter()
-
+"""
 # -9- #
 plt.figure(46)
 data1All = np.loadtxt('../dataFiles/data1All')
@@ -218,6 +219,7 @@ for a in range(20, 501, 20):
     plt.legend()
     waitforEnter()
 
+"""
 # -10- #
 plt.figure(47)
 traff = np.loadtxt('../dataFiles/traff')
@@ -242,8 +244,8 @@ plt.show()
 # waitforEnter()
 
 # install:
-sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
-sudo pip install scipy --upgrade
+#sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
+# sudo pip install scipy --upgrade
 # -12- #
 # for dataset 2 (with modulus-squared of FFT)
 plt.figure(49)
