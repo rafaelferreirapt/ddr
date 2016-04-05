@@ -202,7 +202,7 @@ for i in range(0, 40):
     plt.savefig("../imagens/Multivariate_Distributions/histogram2d_serv_"+str(i)+".png")
 
 waitforEnter()
-"""
+
 # -9- #
 plt.figure(46)
 data1All = np.loadtxt('../dataFiles/data1All')
@@ -216,6 +216,7 @@ for a in range(20, 501, 20):
     plt.plot(x[:-1], pdf, 'k', label='empirical PDF (' + str(a) + ' users)')
     plt.plot(x, mlab.normpdf(x, m, std), 'r', label='inferred Gaussian PDF')
     plt.show()
+    plt.savefig("../imagens/aggregation_effect/empirical PDF (" + str(a) + " users).png")
     plt.legend()
     waitforEnter()
 
@@ -229,6 +230,7 @@ plt.show()
 
 waitforEnter()
 
+"""
 # -11- #
 # for dataset 2
 plt.figure(48)
