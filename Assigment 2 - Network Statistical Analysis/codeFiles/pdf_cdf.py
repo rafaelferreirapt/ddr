@@ -220,30 +220,37 @@ for a in range(20, 501, 20):
     plt.legend()
     waitforEnter()
 
-"""
+
 # -10- #
 plt.figure(47)
 traff = np.loadtxt('../dataFiles/traff')
 C = abs(np.corrcoef(traff, rowvar=0))
 plt.pcolormesh(C)
 plt.show()
+plt.savefig("../imagens/event_correlation/event_correlation.png")
+
 
 waitforEnter()
 
-"""
+
 # -11- #
 # for dataset 2
 plt.figure(48)
-x = data1[:, 2]
-lag = np.arange(0, 100, 1)
-xcorr = np.zeros(100)
-xcorr[0] = np.correlate(x, x)
-for l in lag[1:]:
-    xcorr[l] = np.correlate(x[:-l], x[l:])
-plt.plot(lag, xcorr)
-plt.show()
 
-# waitforEnter()
+for a in range(0, 40, 1):
+    plt.clf()
+
+    x = data1[:, a]
+    lag = np.arange(0, 100, 1)
+    xcorr = np.zeros(100)
+    xcorr[0] = np.correlate(x, x)
+    for l in lag[1:]:
+        xcorr[l] = np.correlate(x[:-l], x[l:])
+    plt.plot(lag, xcorr)
+    plt.show()
+    plt.savefig("../imagens/periodicity/periodicity_service_" + str(a) + ".png")
+
+waitforEnter()
 
 # install:
 #sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
@@ -251,35 +258,51 @@ plt.show()
 # -12- #
 # for dataset 2 (with modulus-squared of FFT)
 plt.figure(49)
-x = data1[:, 2]
-fft = np.fft.fft(x)
-psd = abs(fft) ** 2
-plt.plot(psd[:50])
-plt.show()
-# for dataset 2 (with Welch's method )
-f, psd = periodogram(x)
-plt.plot(1 / f[:50], psd[:50])
-plt.show()
 
-waitforEnter()
-
-# -13- #
-import scalogram
-
-x = data1[:, 2]
-scales = np.arange(1, 50)
-plt.ion()
-plt.figure(50)
-cwt = scalogram.CWTfft(x, scales)
-plt.imshow(abs(cwt), cmap=plt.cm.Blues, aspect='auto')
-plt.show()
-plt.figure(51)
-S, scales = scalogram.scalogramCWT(x, scales)
-plt.plot(scales, S)
-plt.show()
+for a in range(0, 40, 1):
+    plt.clf()
+    x = data1[:, a]
+    fft = np.fft.fft(x)
+    psd = abs(fft) ** 2
+    plt.plot(psd[:50])
+    plt.show()
+    # for dataset 2 (with Welch's method )
+    f, psd = periodogram(x)
+    plt.plot(1 / f[:50], psd[:50])
+    plt.show()
+    plt.savefig("../imagens/periodogram/periodogram" + str(a) + ".png")
 
 waitforEnter()
 """
 
+# -13- #
+import scalogram
+
+
+for a in range(0, 40, 1):
+    plt.clf()
+    plt.figure(50)
+
+    x = data1[:, a]
+    scales = np.arange(1, 50)
+    plt.ion()
+    cwt = scalogram.CWTfft(x, scales)
+    plt.imshow(abs(cwt), cmap=plt.cm.Blues, aspect='auto')
+    plt.show()
+    plt.savefig("../imagens/scalogram/scalogramfft" + str(a) + ".png")
+    plt.clf()
+
+    plt.figure(51)
+
+    S, scales = scalogram.scalogramCWT(x, scales)
+    plt.plot(scales, S)
+    plt.show()
+    plt.savefig("../imagens/scalogram/scalogramCWT" + str(a) + ".png")
+
+
+waitforEnter()
+
+
 # End
 waitforEnter()
+
