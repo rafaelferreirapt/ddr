@@ -10,7 +10,7 @@ def fMorletWaveletFFT(k, scale, N, precision):
 
     if (k > 0 and k < int(N / 2)):
         basic = numpy.sqrt(scale) * numpy.power(numpy.pi, 0.25) * (
-        numpy.exp(-numpy.power(w * scale - precision, 2) / 2))
+            numpy.exp(-numpy.power(w * scale - precision, 2) / 2))
     else:
         basic = 0
     return basic
