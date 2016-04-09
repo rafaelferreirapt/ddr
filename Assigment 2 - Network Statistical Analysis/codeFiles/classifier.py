@@ -176,7 +176,7 @@ plt.show()
 
 # -17- #
 
-anom_perc = 4.5  # original 20
+anom_perc = 20  # original 20
 clf = EllipticEnvelope(contamination=.1)
 clf.fit(rcp_concat)
 clf.decision_function(rcp_concat).ravel()
@@ -191,6 +191,7 @@ plt.contourf(xx, yy, Z, levels=np.linspace(Z.min(), threshold, 7), cmap=plt.cm.B
 plt.contour(xx, yy, Z, levels=[threshold], linewidths=2, colors='red')
 plt.plot(rcp_concat[:, 0], rcp_concat[:, 1], 'ko')
 plt.show()
+plt.savefig("../imagens/anomaly/ex17_20.png")
 
 # End
 wait_for_enter("END!")
