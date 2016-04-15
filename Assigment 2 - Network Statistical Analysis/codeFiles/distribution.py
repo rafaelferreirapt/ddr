@@ -53,8 +53,8 @@ value_false = x[np.logical_not(idx)]
 true_mean = np.mean(value_true)
 false_mean = np.mean(value_false)
 
-print true_mean
-print false_mean
+print "Mean ON: ", true_mean
+print "Mean OFF: ", false_mean
 
 duration_on = []
 duration_off = []
@@ -71,8 +71,8 @@ for i in range(0, len(idx)-1):
     else:
         counter += 1
 
-print np.mean(duration_off)
-print np.mean(duration_on)
+print "Mean Duration ON: ", np.mean(duration_off)
+print "Mean Duration OFF: ", np.mean(duration_on)
 
 mean_duration_on = np.mean(duration_on)
 mean_duration_off = np.mean(duration_off)
@@ -99,7 +99,7 @@ plt.legend()
 plt.show()
 plt.savefig("../imagens/distribution/ex19.png")
 
-# waitforEnter()
+waitforEnter()
 # -20- #
 
 with open('../dataFiles/ams-ix-traffic.json') as data_file:

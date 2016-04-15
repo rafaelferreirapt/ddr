@@ -37,7 +37,7 @@ for i in xrange(260, 600 + 260, 2):
 
 data2_download = data2_download_tmp
 
-"""
+
 # ex 4
 # for dataset 0 (from 0 to 39)
 
@@ -273,7 +273,7 @@ for a in range(0, 40, 1):
     plt.savefig("../imagens/periodogram/periodogram" + str(a) + ".png")
 
 waitforEnter()
-"""
+
 
 # -13- #
 import scalogram
