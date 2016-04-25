@@ -133,3 +133,6 @@ for k, B in enumerate(Bs):
                fancybox=True, shadow=True, ncol=3)
 
     plt.savefig('graph'+str(k+1)+'.png', bbox_inches='tight')
+
+
+wait_for_enter()

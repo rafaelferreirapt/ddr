@@ -173,13 +173,13 @@ env = simpy.Environment()
 
 lamb = 600
 K = 128
-B = 2e6
+B = 10e9
 tmp = 782  # 0.5*1500+0.5*64 bytes em media
 
 rx = pkt_Receiver(env, 'B')
 tx = pkt_Sender(env, 'A', lamb, 'B')
-node1 = Node(env, 'N1', np.inf)
-link = Link(env, 'L', B, K)
+node1 = Node(env, 'N1', 100, K)
+link = Link(env, 'L', B, np.inf)
 
 tx.out = node1
 node1.add_conn(link, 'B')
@@ -189,8 +189,8 @@ print(node1.out)
 
 simtime = 30
 env.run(simtime)
-
-print('Loss probability: %.2f%%' % (100.0 * link.lost_pkts / tx.packets_sent))
+print(node1.queue.items)
+print('Loss probability: %.2f%%' % (100.0 * node1.lost_pkts / tx.packets_sent))
 print('Average delay: %f sec' % (1.0 * rx.overalldelay / rx.packets_recv))
 print('Transmitted bandwidth: %.1f Bytes/sec' % (1.0 * rx.overallbytes / simtime))
 
