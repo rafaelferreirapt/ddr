@@ -1,5 +1,6 @@
 .idea
 /DDR/nbproject/private/
+*.pyc
 
 #latex
 *.aux
