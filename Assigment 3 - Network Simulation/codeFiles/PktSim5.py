@@ -1,6 +1,7 @@
 import simpy
 import numpy as np
 from PktSim1 import pkt_Receiver, pkt_Sender, Node, Link
+import json
 
 
 if __name__ == '__main__':
@@ -20,16 +21,12 @@ if __name__ == '__main__':
 
             rx = pkt_Receiver(env, 'B')
             tx = pkt_Sender(env, 'A', lam, 'B')
-            node1 = Node(env, 'N1', np.inf)
-            node2 = Node(env, 'N2', np.inf)
+            node1 = Node(env, 'N1', 300, k)
             link1 = Link(env, 'L1', B, k)
-            link2 = Link(env, 'L2', B, k)
 
             tx.out = node1
             node1.add_conn(link1, 'B')
-            link1.out = node2
-            node2.add_conn(link2, 'B')
-            link2.out = rx
+            link1.out = rx
 
             simtime = 50
             env.run(simtime)
@@ -53,4 +50,7 @@ if __name__ == '__main__':
 
             print ("Wk: %f" % Wk)
 
-    print "hello"
+    print array
+
+    with open("pktSim5.json", "w") as outfile:
+        json.dump(array, outfile)

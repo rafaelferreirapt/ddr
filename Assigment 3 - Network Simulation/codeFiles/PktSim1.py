@@ -81,7 +81,7 @@ class Node(object):
             self.queue.put(pkt)
         else:
             self.lost_pkts += 1
-            print_debug(str(env.now) + ': Packet lost in node ' + self.id + ' queue - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet lost in node ' + self.id + ' queue - ' + str(pkt))
 
 
 class Link(object):
