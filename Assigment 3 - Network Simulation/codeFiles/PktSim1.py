@@ -7,6 +7,15 @@ import bigfloat
 import json
 
 
+DEBUG = False
+
+
+def print_debug(text):
+    global DEBUG
+    if DEBUG:
+        print (text)
+
+
 class Packet(object):
     """
     Packet Object
@@ -58,21 +67,21 @@ class Node(object):
     def run(self):
         while True:
             pkt = (yield self.queue.get())
-            yield self.env.timeout(1.0 * pkt.size / self.speed)
+            yield self.env.timeout(1.0 / self.speed)
             if self.out.has_key(pkt.dst):
                 # random routing over all possible paths to dst
                 outobj = self.out[pkt.dst][random.randint(0, len(self.out[pkt.dst]) - 1)]
-                print(str(self.env.now) + ': Packet out node ' + self.id + ' - ' + str(pkt))
+                print_debug(str(self.env.now) + ': Packet out node ' + self.id + ' - ' + str(pkt))
                 outobj.put(pkt)
             else:
-                print(str(self.env.now) + ': Packet lost in node ' + self.id + '- No routing path - ' + str(pkt))
+                print_debug(str(self.env.now) + ': Packet lost in node ' + self.id + '- No routing path - ' + str(pkt))
 
     def put(self, pkt):
         if len(self.queue.items) < self.qsize:
             self.queue.put(pkt)
         else:
             self.lost_pkts += 1
-            print(str(env.now) + ': Packet lost in node ' + self.id + ' queue - ' + str(pkt))
+            print_debug(str(env.now) + ': Packet lost in node ' + self.id + ' queue - ' + str(pkt))
 
 
 class Link(object):
@@ -98,7 +107,7 @@ class Link(object):
         while True:
             pkt = (yield self.queue.get())
             yield self.env.timeout(1.0 * pkt.size / self.speed)
-            print(str(self.env.now) + ': Packet out link ' + self.id + ' - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet out link ' + self.id + ' - ' + str(pkt))
             self.out.put(pkt)
 
     def put(self, pkt):
@@ -106,7 +115,7 @@ class Link(object):
             self.queue.put(pkt)
         else:
             self.lost_pkts += 1
-            print(str(self.env.now) + ': Packet lost in link ' + self.id + ' queue - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet lost in link ' + self.id + ' queue - ' + str(pkt))
 
 
 class pkt_Sender(object):
@@ -139,7 +148,7 @@ class pkt_Sender(object):
             else:
                 dst = self.dst[random.randint(0, len(self.dst) - 1)]
             pkt = Packet(self.env.now, size, dst)
-            print(str(self.env.now) + ': Packet sent by ' + self.id + ' - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet sent by ' + self.id + ' - ' + str(pkt))
             self.out.put(pkt)
 
 
@@ -165,81 +174,80 @@ class pkt_Receiver(object):
             self.packets_recv += 1
             self.overalldelay += self.env.now - pkt.time
             self.overallbytes += pkt.size
-            print(str(self.env.now) + ': Packet received by ' + self.id + ' - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet received by ' + self.id + ' - ' + str(pkt))
 
     def put(self, pkt):
         self.queue.put(pkt)
 
+if __name__ == '__main__':
+    # Sender (tx) -> Node1 -> Link -> Receiver (rx)
 
-# Sender (tx) -> Node1 -> Link -> Receiver (rx)
+    lamb = [150, 300, 450]
+    K = [64, 96, 128, 10000]
+    B = 2e6
+    tmp = 782  # 0.5*1500+0.5*64 bytes em media
 
-lamb = [150, 300, 450]
-K = [64, 96, 128, 10000]
-B = 2e6
-tmp = 782  # 0.5*1500+0.5*64 bytes em media
+    array = []
 
-array = []
+    for lam in lamb:
+        for k in K:
+            env = simpy.Environment()
 
-for lam in lamb:
-    for k in K:
-        env = simpy.Environment()
+            rx = pkt_Receiver(env, 'B')
+            tx = pkt_Sender(env, 'A', lam, 'B')
+            node1 = Node(env, 'N1', np.inf)
+            link = Link(env, 'L', B, k)
 
-        rx = pkt_Receiver(env, 'B')
-        tx = pkt_Sender(env, 'A', lam, 'B')
-        node1 = Node(env, 'N1', np.inf)
-        link = Link(env, 'L', B, k)
+            tx.out = node1
+            node1.add_conn(link, 'B')
+            link.out = rx
 
-        tx.out = node1
-        node1.add_conn(link, 'B')
-        link.out = rx
+            simtime = 30
+            env.run(simtime)
+            print("---- lambda: %d, queue size: %d, B: %d, simtime: %d ----" % (lam, k, B, simtime))
+            print('Loss probability: %.2f%%' % (100.0 * link.lost_pkts / tx.packets_sent))
+            print('Average delay: %f sec' % (1.0 * rx.overalldelay / rx.packets_recv))
+            print('Transmitted bandwidth: %.1f Bytes/sec' % (1.0 * rx.overallbytes / simtime))
 
-        simtime = 30
-        env.run(simtime)
-        print("---- lambda: %d, queue size: %d, B: %d, simtime: %d ----" % (lam, k, B, simtime))
-        print('Loss probability: %.2f%%' % (100.0 * link.lost_pkts / tx.packets_sent))
-        print('Average delay: %f sec' % (1.0 * rx.overalldelay / rx.packets_recv))
-        print('Transmitted bandwidth: %.1f Bytes/sec' % (1.0 * rx.overallbytes / simtime))
+            mu = B * 1.0 / (tmp * 8)
 
-        mu = B * 1.0 / (tmp * 8)
+            Wmm1 = 1.0 / (mu - lam)
+            print('M/M/1: %f' % Wmm1)
 
-        Wmm1 = 1.0 / (mu - lam)
-        print('M/M/1: %f' % Wmm1)
+            Wmd1 = 1.0 * (2 * mu - lam) / (2 * mu * (mu - lam))
 
-        Wmd1 = 1.0 * (2 * mu - lam) / (2 * mu * (mu - lam))
+            print('M/D/1: %f' % Wmd1)
 
-        print('M/D/1: %f' % Wmd1)
+            mu1 = B / (1500 * 8)
+            mu2 = B / (64 * 8)
+            Es = 0.5 * (1 / mu1) + 0.5 * (1 / mu2)
+            Es2 = 0.5 * (1 / mu1) ** 2 + 0.5 * (1 / mu2) ** 2
 
-        mu1 = B / (1500 * 8)
-        mu2 = B / (64 * 8)
-        Es = 0.5 * (1 / mu1) + 0.5 * (1 / mu2)
-        Es2 = 0.5 * (1 / mu1) ** 2 + 0.5 * (1 / mu2) ** 2
+            Wmg1 = ((lam * Es2) / 2 * (1 - (lam * Es))) + Es
 
-        Wmg1 = ((lam * Es2) / 2 * (1 - (lam * Es))) + Es
+            print('M/G/1: %f' % Wmg1)
 
-        print('M/G/1: %f' % Wmg1)
+            row = 1.0 * lam / mu
+            som = 0
 
-        row = 1.0 * lam / mu
-        som = 0
+            for i in range(0, k + 1):
+                som += bigfloat.pow(row, i)
 
-        for i in range(0, k + 1):
-            som += bigfloat.pow(row, i)
+            pb = 1.0 * (bigfloat.pow(row, k)) / som
 
-        pb = 1.0 * (bigfloat.pow(row, k)) / som
+            lambm = (1 - pb) * lam
 
-        lambm = (1 - pb) * lam
+            Wmmk = (1.0 / lambm) * (
+                (row * 1.0 / (1 - row)) - 1.0 * ((k + 1) * bigfloat.pow(row, (k + 1))) / (1 - bigfloat.pow(row, (k + 1))))
 
-        Wmmk = (1.0 / lambm) * (
-            (row * 1.0 / (1 - row)) - 1.0 * ((k + 1) * bigfloat.pow(row, (k + 1))) / (1 - bigfloat.pow(row, (k + 1))))
+            print('M/M/1/%d: %f' % (k, Wmmk))
 
-        print('M/M/1/%d: %f' % (k, Wmmk))
+            print('M/M/1/%d: %.2f%%' % (k, pb))
 
-        print('M/M/1/%d: %.2f%%' % (k, pb))
+            array = array + [{'lambda': lam, 'queueSize': k, 'Loss probability': (100.0 * link.lost_pkts / tx.packets_sent),
+                              'Average delay': (1.0 * rx.overalldelay / rx.packets_recv),
+                              'Transmitted bandwidth': (1.0 * rx.overallbytes / simtime), 'M/M/1': Wmm1, 'M/D/1': Wmd1,
+                              'M/G/1': Wmg1, 'M/M/1/K': float(Wmmk), 'M/M/1/K%': float(pb)}]
 
-        array = array + [{'lambda': lam, 'queueSize': k, 'Loss probability': (100.0 * link.lost_pkts / tx.packets_sent),
-                          'Average delay': (1.0 * rx.overalldelay / rx.packets_recv),
-                          'Transmitted bandwidth': (1.0 * rx.overallbytes / simtime), 'M/M/1': Wmm1, 'M/D/1': Wmd1,
-                          'M/G/1': Wmg1, 'M/M/1/K': float(Wmmk), 'M/M/1/K%': float(pb)}]
-
-
-with open('pktSim1.json', 'w') as outfile:
-    json.dump(array, outfile)
+    with open('pktSim1.json', 'w') as outfile:
+        json.dump(array, outfile)
