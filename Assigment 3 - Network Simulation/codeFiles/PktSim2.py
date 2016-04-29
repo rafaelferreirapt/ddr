@@ -4,26 +4,8 @@ import numpy as np
 # sudo pip install bigfloat
 import bigfloat
 import json
+from PktSim1 import pkt_Receiver, pkt_Sender, Node, Link, Packet
 
-
-class Packet(object):
-    """
-    Packet Object
-    time: packet creation time/ID (float)
-    size: packet size (integer)
-    dst: packet destination (string) - pkt_Receiver ID
-    """
-
-    def __init__(self, time, size, dst):
-        self.time = time
-        self.size = size
-        self.dst = dst
-
-    def __repr__(self):
-        return 'Pkt %f [%d] to %s' % (self.time, self.size, self.dst)
-
-
-from PktSim1 import pkt_Receiver, pkt_Sender, Node, Link
 
 # Sender (tx) -> Node1 -> Link -> Receiver (rx)
 
