@@ -2,6 +2,11 @@ import simpy
 import numpy as np
 from PktSim1 import pkt_Receiver, pkt_Sender, Node, Link
 
+
+with open('generated_traff.npy', 'r') as outfile:
+    generated = np.load(outfile)
+
+
 env = simpy.Environment()
 
 # Sender (tx) -> Node1 -> Link -> Receiver (rx)
@@ -121,3 +126,5 @@ Wmmk = (1/lambm)*((row/(1-row)) - ((K+1) * row**(K+1))/(1-row**(K+1)))
 print('M/M/1/%d: %f' % (K, Wmmk))
 
 print('M/M/1/%d: %.2f%%' % (K, pb))
+
+
