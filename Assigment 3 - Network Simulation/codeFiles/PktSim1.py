@@ -7,6 +7,15 @@ import bigfloat
 import json
 
 
+DEBUG = False
+
+
+def print_debug(text):
+    global DEBUG
+    if DEBUG:
+        print (text)
+
+
 class Packet(object):
     """
     Packet Object
@@ -62,17 +71,17 @@ class Node(object):
             if self.out.has_key(pkt.dst):
                 # random routing over all possible paths to dst
                 outobj = self.out[pkt.dst][random.randint(0, len(self.out[pkt.dst]) - 1)]
-                print(str(self.env.now) + ': Packet out node ' + self.id + ' - ' + str(pkt))
+                print_debug(str(self.env.now) + ': Packet out node ' + self.id + ' - ' + str(pkt))
                 outobj.put(pkt)
             else:
-                print(str(self.env.now) + ': Packet lost in node ' + self.id + '- No routing path - ' + str(pkt))
+                print_debug(str(self.env.now) + ': Packet lost in node ' + self.id + '- No routing path - ' + str(pkt))
 
     def put(self, pkt):
         if len(self.queue.items) < self.qsize:
             self.queue.put(pkt)
         else:
             self.lost_pkts += 1
-            print(str(env.now) + ': Packet lost in node ' + self.id + ' queue - ' + str(pkt))
+            print_debug(str(env.now) + ': Packet lost in node ' + self.id + ' queue - ' + str(pkt))
 
 
 class Link(object):
@@ -98,7 +107,7 @@ class Link(object):
         while True:
             pkt = (yield self.queue.get())
             yield self.env.timeout(1.0 * pkt.size / self.speed)
-            print(str(self.env.now) + ': Packet out link ' + self.id + ' - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet out link ' + self.id + ' - ' + str(pkt))
             self.out.put(pkt)
 
     def put(self, pkt):
@@ -106,7 +115,7 @@ class Link(object):
             self.queue.put(pkt)
         else:
             self.lost_pkts += 1
-            print(str(self.env.now) + ': Packet lost in link ' + self.id + ' queue - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet lost in link ' + self.id + ' queue - ' + str(pkt))
 
 
 class pkt_Sender(object):
@@ -139,7 +148,7 @@ class pkt_Sender(object):
             else:
                 dst = self.dst[random.randint(0, len(self.dst) - 1)]
             pkt = Packet(self.env.now, size, dst)
-            print(str(self.env.now) + ': Packet sent by ' + self.id + ' - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet sent by ' + self.id + ' - ' + str(pkt))
             self.out.put(pkt)
 
 
@@ -165,7 +174,7 @@ class pkt_Receiver(object):
             self.packets_recv += 1
             self.overalldelay += self.env.now - pkt.time
             self.overallbytes += pkt.size
-            print(str(self.env.now) + ': Packet received by ' + self.id + ' - ' + str(pkt))
+            print_debug(str(self.env.now) + ': Packet received by ' + self.id + ' - ' + str(pkt))
 
     def put(self, pkt):
         self.queue.put(pkt)
@@ -239,7 +248,6 @@ if __name__ == '__main__':
                               'Average delay': (1.0 * rx.overalldelay / rx.packets_recv),
                               'Transmitted bandwidth': (1.0 * rx.overallbytes / simtime), 'M/M/1': Wmm1, 'M/D/1': Wmd1,
                               'M/G/1': Wmg1, 'M/M/1/K': float(Wmmk), 'M/M/1/K%': float(pb)}]
-
 
     with open('pktSim1.json', 'w') as outfile:
         json.dump(array, outfile)
