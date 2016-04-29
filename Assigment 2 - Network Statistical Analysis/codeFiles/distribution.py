@@ -92,6 +92,9 @@ while k < 300:
 
 out = out[:300]
 
+with open('generated_traff.npy', 'w') as outfile:
+    np.save(outfile, out)
+
 plt.figure(18)
 plt.plot(t, x, 'k', label="original")
 plt.plot(t, out, 'b', label="generated")
