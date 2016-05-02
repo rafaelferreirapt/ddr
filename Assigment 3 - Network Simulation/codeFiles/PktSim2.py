@@ -30,7 +30,10 @@ if __name__ == '__main__':
             node2.add_conn(link, 'B')
             link.out = rx
 
-            simtime = 30  # deve ser 500 para perder pacotes
+            if k == 10000:
+                simtime = 500
+            else:
+                simtime = 30
             env.run(simtime)
             print("---- lambda: %d, queue size: %d, B: %d, simtime: %d ----" % (lam, k, B, simtime))
             print('(1) Loss probability: %.2f%%' % (100.0*((tx.packets_sent-rx.packets_recv)/tx.packets_sent)))

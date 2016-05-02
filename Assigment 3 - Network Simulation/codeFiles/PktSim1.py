@@ -202,7 +202,10 @@ if __name__ == '__main__':
             node1.add_conn(link, 'B')
             link.out = rx
 
-            simtime = 30
+            if k == 10000:
+                simtime = 500
+            else:
+                simtime = 30
             env.run(simtime)
             print("---- lambda: %d, queue size: %d, B: %d, simtime: %d ----" % (lam, k, B, simtime))
             print('Loss probability: %.2f%%' % (100.0 * link.lost_pkts / tx.packets_sent))
