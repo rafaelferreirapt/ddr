@@ -1,6 +1,7 @@
 import simpy
 import numpy as np
 from PktSim1 import pkt_Receiver, pkt_Sender, Node, Link
+import json
 
 
 if __name__ == '__main__':
@@ -55,3 +56,6 @@ if __name__ == '__main__':
                           'Transmitted bandwidth': trans_band})
 
             print ("Wk: %f" % Wk)
+
+    with open("pktSim3.json", "w") as outfile:
+        json.dump(array, outfile)

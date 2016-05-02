@@ -28,7 +28,11 @@ if __name__ == '__main__':
             node1.add_conn(link1, 'B')
             link1.out = rx
 
-            simtime = 50
+            if k == 10000:
+                simtime = 500
+            else:
+                simtime = 30
+
             env.run(simtime)
 
             loss_probability = 100.0 * (tx.packets_sent-rx.packets_recv)/tx.packets_sent
