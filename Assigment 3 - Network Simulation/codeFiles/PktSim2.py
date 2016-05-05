@@ -65,7 +65,7 @@ if __name__ == '__main__':
             for i in range(0, k+1):
                 som += bigfloat.pow(rho, i)
 
-            pb = 100.0*(bigfloat.pow(rho, k)) / som
+            pb = (bigfloat.pow(rho, k)) / som
 
             lambm = (1 - pb)*lam
 
@@ -79,7 +79,7 @@ if __name__ == '__main__':
             array = array + [{'lambda': lam, 'queueSize': k, 'Loss probability': (100.0 * node2.lost_pkts / tx.packets_sent),
                               'Average delay': (1.0 * rx.overalldelay / rx.packets_recv),
                               'Transmitted bandwidth': (1.0 * rx.overallbytes / simtime), 'M/M/1': Wmm1, 'M/D/1': Wmd1,
-                              'M/G/1': Wmg1, 'M/M/1/K': float(Wmmk), 'M/M/1/K%': float(pb)}]
+                              'M/G/1': Wmg1, 'M/M/1/K': float(Wmmk), 'M/M/1/K%': float(100*pb)}]
 
     with open('pktSim2.json', 'w') as outfile:
         json.dump(array, outfile)

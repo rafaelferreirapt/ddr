@@ -250,7 +250,7 @@ if __name__ == '__main__':
             array = array + [{'lambda': lam, 'queueSize': k, 'Loss probability': (100.0 * link.lost_pkts / tx.packets_sent),
                               'Average delay': (1.0 * rx.overalldelay / rx.packets_recv),
                               'Transmitted bandwidth': (1.0 * rx.overallbytes / simtime), 'M/M/1': Wmm1, 'M/D/1': Wmd1,
-                              'M/G/1': Wmg1, 'M/M/1/K': float(Wmmk), 'M/M/1/K%': float(pb)}]
+                              'M/G/1': Wmg1, 'M/M/1/K': float(Wmmk), 'M/M/1/K%': float(100*pb)}]
 
     with open('pktSim1.json', 'w') as outfile:
         json.dump(array, outfile)

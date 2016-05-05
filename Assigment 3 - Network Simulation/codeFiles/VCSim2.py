@@ -4,7 +4,6 @@ from scipy.misc import factorial
 import sys
 import matplotlib.pyplot as plt
 
-
 class NodeStats:
     """
         Node stats recording
@@ -67,6 +66,7 @@ def vc(env, id, av_duration, b, stats):
     b: VC required bandwidth
     stats: Global stats recording (NodeStats class)
     """
+
     yield env.timeout(np.random.exponential(av_duration))  # calcula a duracao da chamada
     stats.loadint += (1.0 / stats.bw) * (stats.bw - stats.available_bw) * (
         env.now - stats.lastloadchange)  # a mudanca da chamada
@@ -81,13 +81,17 @@ lambdaspecial = [1, 1.5, 2, 2.5, 3]  # taxa media de chegada dos pedidos
 
 invmus = [2, 4, 6, 8, 10]  # duracao media das chamadas
 Bs = [16, 24, 32]  # capacidade de recursos que o no tem
-R = [0, 4, 8, 16]
+R = [0, 16]
 bstandard = 2  # recursos necessarios por cada chamada
 bspecial = 4  # recursos necessarios por cada chamada
 
 simtime = 3000
 
-res = np.zeros((len(lambdastandard), len(invmus), len(Bs), 4))
+resStandard = np.zeros((len(lambdastandard), len(invmus), len(Bs), 2))
+resSpecial = np.zeros((len(lambdaspecial), len(invmus), len(Bs), 2))
+
+
+array = []
 
 '''
 stats = NodeStats(32, R, N)
@@ -126,52 +130,55 @@ for l, lambstan in enumerate(lambdastandard):
 
                 print("Simulated Average Link Load=%.2f%%" % (100.0 * stats.loadint / simtime))
 
-                rho1 = lambstan * invmu
-                i1 = np.arange(0, C1 + 1)
-                blkp1 = (np.power(1.0 * rho1, C1) / factorial(C1)) / np.sum(np.power(1.0 * rho1, i1) / factorial(i1))
-                print("Theoretical Block Probability %d=%f" % (1, blkp1))
+                resStandard[l, j, k] = [(1.0 * stats.vcs_blk[0] / stats.vcs_total[0]),
+                                           (100.0 * stats.loadint / simtime)]
 
-                rho2 = lambspe * invmu
-                i2 = np.arange(0, C2 + 1)
-                blkp2 = (np.power(1.0 * rho2, C2) / factorial(C2)) / np.sum(np.power(1.0 * rho2, i2) / factorial(i2))
-                print("Theoretical Block Probability %d=%f" % (2, blkp2))
-
-                i3 = np.arange(1, C1 + 1)
-                linkload1 = (1.0 / C1) * np.sum(np.power(1.0 * rho1, i3) / factorial(i3 - 1)) / np.sum(
-                    np.power(1.0 * rho1, i1) / factorial(i1))
-
-                i4 = np.arange(1, C2 + 1)
-                linkload2 = (1.0 / C2) * np.sum(np.power(1.0 * rho2, i4) / factorial(i4 - 1)) / np.sum(
-                    np.power(1.0 * rho2, i2) / factorial(i2))
-
-                print("Theoretical Average Link Load %d=%.2f%%" % (1, 100 * linkload1))
-                print("Theoretical Average Link Load %d=%.2f%%" % (2, 100 * linkload2))
+                resSpecial[a, j, k] = [(1.0 * stats.vcs_blk[1] / stats.vcs_total[1]),
+                                          (100.0 * stats.loadint / simtime)]
 
 
-'''
 # now plot
 
 plt.ion()
+actual_figure = 0
 
 for k, B in enumerate(Bs):
-    plt.figure(k+1)
+    actual_figure += 1
+    plt.figure(actual_figure)
     plt.suptitle("VC Bw=2Mbits/sec; Link Bw="+str(B)+"Mbits/sec")
 
     for j, invmu in enumerate(invmus):
+
         plt.subplot(1, 2, 1)
         plt.plot(resStandard[:, j, k, 0], label="1/$\mu$=" + str(invmu))
-        plt.plot(resStandard[:, j, k, 2], ls="dotted", c="k")
-        plt.title("Block Probability")
+        plt.title("Block Probability Standard")
 
         plt.subplot(1, 2, 2)
         plt.plot(resStandard[:, j, k, 1], label="1/$\mu$=" + str(invmu))
-        plt.plot(resStandard[:, j, k, 3], ls="dotted", c="k")
-        plt.title("Average link load")
+        plt.title("Average link load Standard")
 
     plt.legend(loc='upper center', bbox_to_anchor=(0, -0.05),
                fancybox=True, shadow=True, ncol=3)
 
-    plt.savefig('graph'+str(k+1)+'.png', bbox_inches='tight')
+    plt.savefig('graph standard'+str(actual_figure)+'.png', bbox_inches='tight')
 
-'''
+    actual_figure += 1
+    plt.figure(actual_figure)
+    plt.suptitle("VC Bw=2Mbits/sec; Link Bw="+str(B)+"Mbits/sec")
+
+    for j, invmu in enumerate(invmus):
+        plt.subplot(1, 2, 1)
+        plt.plot(resSpecial[:, j, k, 0], label="1/$\mu$=" + str(invmu))
+        plt.title("Block Probability Special")
+
+        plt.subplot(1, 2, 2)
+        plt.plot(resStandard[:, j, k, 1], label="1/$\mu$=" + str(invmu))
+        plt.title("Average link load Special")
+
+    plt.legend(loc='upper center', bbox_to_anchor=(0, -0.05),
+               fancybox=True, shadow=True, ncol=3)
+
+    plt.savefig('graph special'+str(actual_figure)+'.png', bbox_inches='tight')
+
+
 wait_for_enter()
