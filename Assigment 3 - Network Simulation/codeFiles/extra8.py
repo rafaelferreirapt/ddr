@@ -1,11 +1,24 @@
 import simpy
 import numpy as np
 from PktSim1 import pkt_Receiver, pkt_Sender, Node, Link
+import pickle
 
 
 with open('generated_traff.npy', 'r') as outfile:
     generated = np.load(outfile)
 
+time_packets = []
+
+for gen in generated:
+    # packets received in 1 sec
+    # 1 sec / gen
+    for i in range(0, gen.astype(np.int64)):
+        time_packets.append(1.0/gen)
+
+with open("time_gen", 'wb') as f:
+    pickle.dump(time_packets, f)
+
+exit(1)
 
 env = simpy.Environment()
 
@@ -68,7 +81,11 @@ print('M/M/1/%d: %f' % (K, Wmmk))
 
 print('M/M/1/%d: %.2f%%' % (K, pb))
 
-# Sender (tx) -> Node1 -> Link -> Receiver (rx)
+"""
+NODE 2
+"""
+
+# Sender (tx) -> Node2 -> Link -> Receiver (rx)
 
 lamb = 600
 K = 128
@@ -126,5 +143,3 @@ Wmmk = (1/lambm)*((row/(1-row)) - ((K+1) * row**(K+1))/(1-row**(K+1)))
 print('M/M/1/%d: %f' % (K, Wmmk))
 
 print('M/M/1/%d: %.2f%%' % (K, pb))
-
-
