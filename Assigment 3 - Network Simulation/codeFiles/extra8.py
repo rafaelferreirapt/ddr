@@ -1,145 +1,127 @@
 import simpy
 import numpy as np
-from PktSim1 import pkt_Receiver, pkt_Sender, Node, Link
+from PktSim1 import pkt_Receiver, Node, Link, print_debug, Packet
 import pickle
+import random
+from colorama import Fore, Back, Style
 
 
-with open('generated_traff.npy', 'r') as outfile:
-    generated = np.load(outfile)
+simtime = 0
 
-time_packets = []
 
-for gen in generated:
-    # packets received in 1 sec
-    # 1 sec / gen
-    for i in range(0, gen.astype(np.int64)):
-        time_packets.append(1.0/gen)
+class pkt_Sender(object):
 
-with open("time_gen", 'wb') as f:
-    pickle.dump(time_packets, f)
+    """
+    Packet Sender
+    env: SimPy environment
+    id: Sender ID (string)
+    rate: Packet generation rate (float, packets/sec)
+    dst: List with packet destinations (list of strings, if size>1 destination is random among all possible destinations)
+    """
 
-exit(1)
+    def __init__(self, env, id, dst, list_pkts):
+        self.env = env
+        self.id = id
+        self.out = None
+        self.dst = dst
+        self.packets_sent = 0
+        self.list_pkts = list_pkts
+        self.action = env.process(self.run())
 
-env = simpy.Environment()
+    def run(self):
+        global simtime
 
-# Sender (tx) -> Node1 -> Link -> Receiver (rx)
+        for pkt_l in self.list_pkts:
+            if pkt_l["number_of_packets"] == 0:
+                time = pkt_l["time"]
+                simtime += time
 
-lamb = 600
-K = 128
-B = 2e6
-tmp = 782  # 0.5*1500+0.5*64 bytes em media
+                yield self.env.timeout(time)
+            else:
+                for i in range(0, pkt_l["number_of_packets"]):
+                    time = pkt_l["time"]
+                    simtime += time
 
-rx = pkt_Receiver(env, 'B')
-tx = pkt_Sender(env, 'A', lamb, 'B')
-node1 = Node(env, 'N1', np.inf)
-link = Link(env, 'L', B, K)
+                    yield self.env.timeout(time)
 
-tx.out = node1
-node1.add_conn(link, 'B')
-link.out = rx
+                    self.packets_sent += 1
+                    # size=random.randint(64,1500)
+                    # size=int(np.random.exponential(500))
+                    size = pkt_l["size"]
 
-print(node1.out)
+                    if len(self.dst) == 1:
+                        dst = self.dst[0]
+                    else:
+                        dst = self.dst[random.randint(0, len(self.dst) - 1)]
 
-simtime = 30
-env.run(simtime)
+                    pkt = Packet(self.env.now, size, dst)
+                    print_debug(str(self.env.now) + ': Packet sent by ' + self.id + ' - ' + str(pkt))
+                    self.out.put(pkt)
 
-print('Loss probability: %.2f%%' % (100.0 * link.lost_pkts / tx.packets_sent))
-print('Average delay: %f sec' % (1.0 * rx.overalldelay / rx.packets_recv))
-print('Transmitted bandwidth: %.1f Bytes/sec' % (1.0 * rx.overallbytes / simtime))
+        self.env.exit()
 
-mu = B/(tmp*8)
+if __name__ == '__main__':
+    print Fore.BLUE + Style.BRIGHT + "NODE 1" + Style.RESET_ALL
 
-Wmm1 = 1/(mu-lamb)
-print('M/M/1: %f' % Wmm1)
+    # time generated, see extra8_generate.py
 
-Wmd1 = (2*mu - lamb)/(2*mu*(mu - lamb))
+    with open("time_gen.p", 'rb') as f:
+        time_packets = pickle.load(f)
 
-print('M/D/1: %f' % Wmd1)
+    env = simpy.Environment()
 
-mu1 = B/(1500*8)
-mu2 = B/(64*8)
-Es = 0.5 * (1/mu1) + 0.5 * (1/mu2)
-Es2 = 0.5 * (1/mu1)**2 + 0.5 * (1/mu2)**2
+    # Sender (tx) -> Node1 -> Link -> Receiver (rx)
 
-Wmg1 = ((lamb * Es2)/2*(1-(lamb * Es))) + Es
+    lamb = 600
+    K = 128
+    B = 2e6
+    tmp = 782  # 0.5*1500+0.5*64 bytes em media
 
-print('M/G/1: %f' % Wmg1)
+    rx = pkt_Receiver(env, 'B')
+    tx = pkt_Sender(env, 'A', 'B', time_packets)
+    node1 = Node(env, 'N1', np.inf)
+    link = Link(env, 'L', B, K)
 
-row = lamb/mu
+    tx.out = node1
+    node1.add_conn(link, 'B')
+    link.out = rx
 
-som = 0
-for i in range(0, K+1):
-    som += row**i
+    env.run()
 
-pb = (row**K)/som
+    print((Fore.LIGHTBLUE_EX + "Loss probability:" + Fore.GREEN + " %.2f%%" + Style.RESET_ALL) % (100.0 * link.lost_pkts / tx.packets_sent))
+    print((Fore.LIGHTBLUE_EX + 'Average delay:' + Fore.GREEN + ' %f sec' + Style.RESET_ALL) % (1.0 * rx.overalldelay / rx.packets_recv))
+    print((Fore.LIGHTBLUE_EX + 'Transmitted bandwidth:' + Fore.GREEN + ' %.1f Bytes/sec' + Style.RESET_ALL) % (1.0 * rx.overallbytes / simtime))
 
-lambm = (1 - pb)*lamb
+    mu = B/(tmp*8)
 
-Wmmk = (1/lambm)*((row/(1-row)) - ((K+1) * row**(K+1))/(1-row**(K+1)))
+    Wmm1 = 1/(mu-lamb)
+    print((Fore.LIGHTBLUE_EX + 'M/M/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmm1)
 
-print('M/M/1/%d: %f' % (K, Wmmk))
+    Wmd1 = (2*mu - lamb)/(2*mu*(mu - lamb))
 
-print('M/M/1/%d: %.2f%%' % (K, pb))
+    print((Fore.LIGHTBLUE_EX + 'M/D/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmd1)
 
-"""
-NODE 2
-"""
+    mu1 = B/(1500*8)
+    mu2 = B/(64*8)
+    Es = 0.5 * (1/mu1) + 0.5 * (1/mu2)
+    Es2 = 0.5 * (1/mu1)**2 + 0.5 * (1/mu2)**2
 
-# Sender (tx) -> Node2 -> Link -> Receiver (rx)
+    Wmg1 = ((lamb * Es2)/2*(1-(lamb * Es))) + Es
 
-lamb = 600
-K = 128
-B = 10e9
-tmp = 782  # 0.5*1500+0.5*64 bytes em media
+    print((Fore.LIGHTBLUE_EX + 'M/G/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmg1)
 
-rx = pkt_Receiver(env, 'B')
-tx = pkt_Sender(env, 'A', lamb, 'B')
-node2 = Node(env, 'N1', 100, K)
-link = Link(env, 'L', B, np.inf)
+    row = lamb/mu
 
-tx.out = node2
-node2.add_conn(link, 'B')
-link.out = rx
+    som = 0
+    for i in range(0, K+1):
+        som += row**i
 
-print(node2.out)
+    pb = (row**K)/som
 
-simtime = 30
-env.run(simtime)
-print(node2.queue.items)
-print('Loss probability: %.2f%%' % (100.0 * node2.lost_pkts / tx.packets_sent))
-print('Average delay: %f sec' % (1.0 * rx.overalldelay / rx.packets_recv))
-print('Transmitted bandwidth: %.1f Bytes/sec' % (1.0 * rx.overallbytes / simtime))
+    lambm = (1 - pb)*lamb
 
-mu = B/(tmp*8)
+    Wmmk = (1/lambm)*((row/(1-row)) - ((K+1) * row**(K+1))/(1-row**(K+1)))
 
-Wmm1 = 1/(mu-lamb)
-print('M/M/1: %f' % Wmm1)
+    print((Fore.LIGHTBLUE_EX + 'M/M/1/%d:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % (K, Wmmk))
 
-Wmd1 = (2*mu - lamb)/(2*mu*(mu - lamb))
-
-print('M/D/1: %f' % Wmd1)
-
-mu1 = B/(1500*8)
-mu2 = B/(64*8)
-Es = 0.5 * (1/mu1) + 0.5 * (1/mu2)
-Es2 = 0.5 * (1/mu1)**2 + 0.5 * (1/mu2)**2
-
-Wmg1 = ((lamb * Es2)/2*(1-(lamb * Es))) + Es
-
-print('M/G/1: %f' % Wmg1)
-
-row = lamb/mu
-
-som = 0
-for i in range(0, K+1):
-    som += row**i
-
-pb = (row**K)/som
-
-lambm = (1 - pb)*lamb
-
-Wmmk = (1/lambm)*((row/(1-row)) - ((K+1) * row**(K+1))/(1-row**(K+1)))
-
-print('M/M/1/%d: %f' % (K, Wmmk))
-
-print('M/M/1/%d: %.2f%%' % (K, pb))
+    print((Fore.LIGHTBLUE_EX + 'M/M/1/%d:' + Fore.GREEN + ' %.2f%%' + Style.RESET_ALL) % (K, pb))
