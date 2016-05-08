@@ -11,7 +11,7 @@ if __name__ == '__main__':
     K = [64, 96, 128, 10000]
     B = 10e9
     tmp = 782  # 0.5*1500+0.5*64 bytes em media
-    mu = 1.0*B/(tmp*8)
+    mu = 350
 
     array = []
 
@@ -50,12 +50,12 @@ if __name__ == '__main__':
             Wk = 2.0 / (mu-lam)
             array.append({'lambda': lam,
                           'queueSize': k,
-                          'Wk': Wk,
-                          'Loss Probability': loss_probability,
-                          'Average Delay': average_delay,
-                          'Transmitted bandwidth': trans_band})
+                          'Wk': round(Wk, 5),
+                          'Loss Probability': round(loss_probability, 5),
+                          'Average Delay': round(average_delay, 5),
+                          'Transmitted bandwidth': round(trans_band, 5)})
 
             print ("Wk: %f" % Wk)
 
-    with open("pktSim5.json", "w") as outfile:
+    with open("pktSim4.json", "w") as outfile:
         json.dump(array, outfile)
