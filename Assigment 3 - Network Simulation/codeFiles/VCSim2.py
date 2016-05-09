@@ -106,35 +106,37 @@ for id in range(1, 3):
 print("Simulated Average Link Load=%.2f%%" % (100.0 * stats.loadint / simtime))
 '''
 
-for l, lambstan in enumerate(lambdastandard):
-    for a, lambspe in enumerate(lambdaspecial):
+for i in range(1, 3):
 
-        for j, invmu in enumerate(invmus):
-            for k, B in enumerate(Bs):
-                C1 = B / bstandard
-                C2 = B / bspecial
+    for l, lambstan in enumerate(lambdastandard):
+        for a, lambspe in enumerate(lambdaspecial):
 
-                stats = NodeStats(B, R, N)
-                env = simpy.Environment()
-                env.process(vc_generator(env, 1, lambstan, invmu, bstandard, stats))
-                env.process(vc_generator(env, 2, lambspe, invmu, bspecial, stats))
-                # env.process(vc_generator(env, lamb, invmu, b, stats))
-                env.run(simtime)
+            for j, invmu in enumerate(invmus):
+                for k, B in enumerate(Bs):
+                    C1 = B / bstandard
+                    C2 = B / bspecial
 
-                print("---- lambdaStandard: %d, lambdaSpecial: %.1f, invmu: %d, B: %d, bStandard: %d, bSpecial: %d, simtime: %d ----" % (
-                lambstan, lambspe, invmu, B, bstandard, bspecial, simtime))
+                    stats = NodeStats(B, R, N)
+                    env = simpy.Environment()
+                    env.process(vc_generator(env, 1, lambstan, invmu, bstandard, stats))
+                    env.process(vc_generator(env, 2, lambspe, invmu, bspecial, stats))
+                    # env.process(vc_generator(env, lamb, invmu, b, stats))
+                    env.run(simtime)
 
-                for id in range(1, N + 1):
-                    print(
-                    "Simulated Block Probability %d=%f" % (id, 1.0 * stats.vcs_blk[id - 1] / stats.vcs_total[id - 1]))
+                    print("---- lambdaStandard: %d, lambdaSpecial: %.1f, invmu: %d, B: %d, bStandard: %d, bSpecial: %d, simtime: %d ----" % (
+                    lambstan, lambspe, invmu, B, bstandard, bspecial, simtime))
 
-                print("Simulated Average Link Load=%.2f%%" % (100.0 * stats.loadint / simtime))
+                    for id in range(1, N + 1):
+                        print(
+                        "Simulated Block Probability %d=%f" % (id, 1.0 * stats.vcs_blk[id - 1] / stats.vcs_total[id - 1]))
 
-                resStandard[l, j, k] = [(1.0 * stats.vcs_blk[0] / stats.vcs_total[0]),
-                                           (100.0 * stats.loadint / simtime)]
+                    print("Simulated Average Link Load=%.2f%%" % (100.0 * stats.loadint / simtime))
 
-                resSpecial[a, j, k] = [(1.0 * stats.vcs_blk[1] / stats.vcs_total[1]),
-                                          (100.0 * stats.loadint / simtime)]
+                    resStandard[l, j, k] += [(1.0 * stats.vcs_blk[0] / stats.vcs_total[0]),
+                                               (100.0 * stats.loadint / simtime)]
+
+                    resSpecial[a, j, k] += [(1.0 * stats.vcs_blk[1] / stats.vcs_total[1]),
+                                               (100.0 * stats.loadint / simtime)]
 
 
 # now plot
@@ -150,11 +152,11 @@ for k, B in enumerate(Bs):
     for j, invmu in enumerate(invmus):
 
         plt.subplot(1, 2, 1)
-        plt.plot(resStandard[:, j, k, 0], label="1/$\mu$=" + str(invmu))
+        plt.plot(resStandard[:, j, k, 0]/10, label="1/$\mu$=" + str(invmu))
         plt.title("Block Probability Standard")
 
         plt.subplot(1, 2, 2)
-        plt.plot(resStandard[:, j, k, 1], label="1/$\mu$=" + str(invmu))
+        plt.plot(resStandard[:, j, k, 1]/10, label="1/$\mu$=" + str(invmu))
         plt.title("Average link load Standard")
 
     plt.legend(loc='upper center', bbox_to_anchor=(0, -0.05),
@@ -168,11 +170,11 @@ for k, B in enumerate(Bs):
 
     for j, invmu in enumerate(invmus):
         plt.subplot(1, 2, 1)
-        plt.plot(resSpecial[:, j, k, 0], label="1/$\mu$=" + str(invmu))
+        plt.plot(resSpecial[:, j, k, 0]/10, label="1/$\mu$=" + str(invmu))
         plt.title("Block Probability Special")
 
         plt.subplot(1, 2, 2)
-        plt.plot(resStandard[:, j, k, 1], label="1/$\mu$=" + str(invmu))
+        plt.plot(resStandard[:, j, k, 1]/10, label="1/$\mu$=" + str(invmu))
         plt.title("Average link load Special")
 
     plt.legend(loc='upper center', bbox_to_anchor=(0, -0.05),
