@@ -1,1 +1,98 @@
-[{"Transmitted bandwidth": 116991.73333, "Wk": 0.01179, "Average Delay": 0.00987, "queueSize": 64, "Loss Probability": 0.0, "lambda": 150}, {"Transmitted bandwidth": 115380.53333, "Wk": 0.01179, "Average Delay": 0.00967, "queueSize": 96, "Loss Probability": 0.09066, "lambda": 150}, {"Transmitted bandwidth": 117159.73333, "Wk": 0.01179, "Average Delay": 0.0098, "queueSize": 128, "Loss Probability": 0.0, "lambda": 150}, {"Transmitted bandwidth": 116853.032, "Wk": 0.01179, "Average Delay": 0.00989, "queueSize": 10000, "Loss Probability": 0.00268, "lambda": 150}, {"Transmitted bandwidth": 232853.73333, "Wk": 0.10156, "Average Delay": 0.12741, "queueSize": 64, "Loss Probability": 1.99823, "lambda": 300}, {"Transmitted bandwidth": 231681.73333, "Wk": 0.10156, "Average Delay": 0.09523, "queueSize": 96, "Loss Probability": 0.1121, "lambda": 300}, {"Transmitted bandwidth": 233756.13333, "Wk": 0.10156, "Average Delay": 0.27501, "queueSize": 128, "Loss Probability": 1.79042, "lambda": 300}, {"Transmitted bandwidth": 234599.416, "Wk": 0.10156, "Average Delay": 1.05613, "queueSize": 10000, "Loss Probability": 0.35612, "lambda": 300}, {"Transmitted bandwidth": 233679.86667, "Wk": -0.01535, "Average Delay": 0.23175, "queueSize": 64, "Loss Probability": 34.10739, "lambda": 450}, {"Transmitted bandwidth": 233444.8, "Wk": -0.01535, "Average Delay": 0.33329, "queueSize": 96, "Loss Probability": 33.64065, "lambda": 450}, {"Transmitted bandwidth": 237940.0, "Wk": -0.01535, "Average Delay": 0.4386, "queueSize": 128, "Loss Probability": 33.68964, "lambda": 450}, {"Transmitted bandwidth": 233473.92, "Wk": -0.01535, "Average Delay": 30.07517, "queueSize": 10000, "Loss Probability": 33.25294, "lambda": 450}]
+[
+  {
+    "lambda": 150,
+    "queueSize": 64,
+    "Loss Probability": 0.01118,
+    "Average Delay": 0.00986,
+    "Transmitted bandwidth": 117543.4,
+    "Wk": 0.01179
+  },
+  {
+    "Transmitted bandwidth": 117739.33333,
+    "Wk": 0.01179,
+    "Average Delay": 0.0099,
+    "queueSize": 96,
+    "Loss Probability": 0.03317,
+    "lambda": 150
+  },
+  {
+    "Transmitted bandwidth": 116991,
+    "Wk": 0.01179,
+    "Average Delay": 0.00984,
+    "queueSize": 128,
+    "Loss Probability": 0.01115,
+    "lambda": 150
+  },
+  {
+    "Transmitted bandwidth": 117620.648,
+    "Wk": 0.01179,
+    "Average Delay": 0.00987,
+    "queueSize": 10000,
+    "Loss Probability": 0.00067,
+    "lambda": 150
+  },
+  {
+    "Transmitted bandwidth": 233642.73333,
+    "Wk": 0.10156,
+    "Average Delay": 0.13872,
+    "queueSize": 64,
+    "Loss Probability": 1.37433,
+    "lambda": 300
+  },
+  {
+    "Transmitted bandwidth": 230754.73333,
+    "Wk": 0.10156,
+    "Average Delay": 0.11477,
+    "queueSize": 96,
+    "Loss Probability": 0.41959,
+    "lambda": 300
+  },
+  {
+    "Transmitted bandwidth": 230433.4,
+    "Wk": 0.10156,
+    "Average Delay": 0.16925,
+    "queueSize": 128,
+    "Loss Probability": 0.78062,
+    "lambda": 300
+  },
+  {
+    "Transmitted bandwidth": 234200.228,
+    "Wk": 0.10156,
+    "Average Delay": 0.74235,
+    "queueSize": 10000,
+    "Loss Probability": 0.12461,
+    "lambda": 300
+  },
+  {
+    "Transmitted bandwidth": 234946.2,
+    "Wk": -0.01535,
+    "Average Delay": 0.23206,
+    "queueSize": 64,
+    "Loss Probability": 33.16216,
+    "lambda": 450
+  },
+  {
+    "Transmitted bandwidth": 233296.93333,
+    "Wk": -0.01535,
+    "Average Delay": 0.33406,
+    "queueSize": 96,
+    "Loss Probability": 33.29091,
+    "lambda": 450
+  },
+  {
+    "Transmitted bandwidth": 234862.66667,
+    "Wk": -0.01535,
+    "Average Delay": 0.43899,
+    "queueSize": 128,
+    "Loss Probability": 33.08208,
+    "lambda": 450
+  },
+  {
+    "Transmitted bandwidth": 234454.452,
+    "Wk": -0.01535,
+    "Average Delay": 29.98766,
+    "queueSize": 10000,
+    "Loss Probability": 33.52031,
+    "lambda": 450
+  }
+]
