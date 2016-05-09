@@ -7,6 +7,9 @@ with open('generated_traff.npy', 'r') as outfile:
 
 time_packets = []
 
+total_seconds = 0
+total_number_of_packets = 0
+
 for gen in generated:
     # packets received in 1 sec
     # 1 sec / gen
@@ -21,14 +24,18 @@ for gen in generated:
     else:
         seconds = (1.0 / number_of_packets)
 
+    total_seconds += 1
+    total_number_of_packets += number_of_packets
+
     if len(time_packets) > 0 and time_packets[-1]["number_of_packets"] == number_of_packets:
         time_packets[-1]["time"] += seconds
     else:
         time_packets += [{
             "time": seconds,
-            "number_of_packets": number_of_packets,
-            "size": size
+            "number_of_packets": number_of_packets
         }]
+
+print "lambda mean: " + str(1.0*(total_number_of_packets/total_seconds))
 
 with open("time_gen.p", 'wb') as f:
     pickle.dump(time_packets, f)

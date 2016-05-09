@@ -1,3 +1,4 @@
+import bigfloat
 import simpy
 import numpy as np
 from PktSim1 import pkt_Receiver, Node, Link, print_debug, Packet
@@ -47,7 +48,7 @@ class pkt_Sender(object):
                     self.packets_sent += 1
                     # size=random.randint(64,1500)
                     # size=int(np.random.exponential(500))
-                    size = pkt_l["size"]
+                    size = int(np.random.choice([64, 1500], 1, [.5, .5]))
 
                     if len(self.dst) == 1:
                         dst = self.dst[0]
@@ -72,7 +73,7 @@ if __name__ == '__main__':
 
     # Sender (tx) -> Node1 -> Link -> Receiver (rx)
 
-    lamb = 600
+    lamb = 275.0
     K = 128
     B = 2e6
     tmp = 782  # 0.5*1500+0.5*64 bytes em media
@@ -88,80 +89,16 @@ if __name__ == '__main__':
 
     env.run()
 
-    print((Fore.LIGHTBLUE_EX + "Loss probability:" + Fore.GREEN + " %.2f%%" + Style.RESET_ALL) % (100.0 * link.lost_pkts / tx.packets_sent))
-    print((Fore.LIGHTBLUE_EX + 'Average delay:' + Fore.GREEN + ' %f sec' + Style.RESET_ALL) % (1.0 * rx.overalldelay / rx.packets_recv))
-    print((Fore.LIGHTBLUE_EX + 'Transmitted bandwidth:' + Fore.GREEN + ' %.1f Bytes/sec' + Style.RESET_ALL) % (1.0 * rx.overallbytes / simtime))
+    print((Fore.LIGHTBLUE_EX + "Loss probability:" + Fore.GREEN + " %.2f%%" + Style.RESET_ALL) % round((100.0 * link.lost_pkts / tx.packets_sent), 5))
+    print((Fore.LIGHTBLUE_EX + 'Average delay:' + Fore.GREEN + ' %f sec' + Style.RESET_ALL) % round((1.0 * rx.overalldelay / rx.packets_recv), 5))
+    print((Fore.LIGHTBLUE_EX + 'Transmitted bandwidth:' + Fore.GREEN + ' %.1f Bytes/sec' + Style.RESET_ALL) % round((1.0 * rx.overallbytes / simtime), 5))
 
-    mu = B/(tmp*8)
+    mu = B * 1.0 / (tmp * 8)
 
-    Wmm1 = 1/(mu-lamb)
+    Wmm1 = 1.0 / (mu - lamb)
     print((Fore.LIGHTBLUE_EX + 'M/M/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmm1)
 
-    Wmd1 = (2*mu - lamb)/(2*mu*(mu - lamb))
-
-    print((Fore.LIGHTBLUE_EX + 'M/D/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmd1)
-
-    mu1 = B/(1500*8)
-    mu2 = B/(64*8)
-    Es = 0.5 * (1/mu1) + 0.5 * (1/mu2)
-    Es2 = 0.5 * (1/mu1)**2 + 0.5 * (1/mu2)**2
-
-    Wmg1 = ((lamb * Es2)/2*(1-(lamb * Es))) + Es
-
-    print((Fore.LIGHTBLUE_EX + 'M/G/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmg1)
-
-    row = lamb/mu
-
-    som = 0
-    for i in range(0, K+1):
-        som += row**i
-
-    pb = (row**K)/som
-
-    lambm = (1 - pb)*lamb
-
-    Wmmk = (1/lambm)*((row/(1-row)) - ((K+1) * row**(K+1))/(1-row**(K+1)))
-
-    print((Fore.LIGHTBLUE_EX + 'M/M/1/%d:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % (K, Wmmk))
-
-    print((Fore.LIGHTBLUE_EX + 'M/M/1/%d:' + Fore.GREEN + ' %.2f%%' + Style.RESET_ALL) % (K, pb))
-
-    print " "
-
-    print Fore.BLUE + Style.BRIGHT + "NODE 2" + Style.RESET_ALL
-
-    # #  NODE 2
-    env = simpy.Environment()
-
-    # Sender (tx) -> Node2 -> Link -> Receiver (rx)
-    lamb = 600
-    K = 128
-    B = 10e9
-    tmp = 782  # 0.5*1500+0.5*64 bytes em media
-
-    rx = pkt_Receiver(env, 'B')
-    tx = pkt_Sender(env, 'A', 'B', time_packets)
-    node2 = Node(env, 'N1', 100, K)
-    link = Link(env, 'L', B, np.inf)
-
-    tx.out = node2
-    node2.add_conn(link, 'B')
-    link.out = rx
-
-    simtime = 0
-
-    env.run()
-
-    print((Fore.LIGHTBLUE_EX + "Loss probability:" + Fore.GREEN + " %.2f%%" + Style.RESET_ALL) % (100.0 * node2.lost_pkts / tx.packets_sent))
-    print((Fore.LIGHTBLUE_EX + 'Average delay:' + Fore.GREEN + ' %f sec' + Style.RESET_ALL) % (1.0 * rx.overalldelay / rx.packets_recv))
-    print((Fore.LIGHTBLUE_EX + 'Transmitted bandwidth:' + Fore.GREEN + ' %.1f Bytes/sec' + Style.RESET_ALL) % (1.0 * rx.overallbytes / simtime))
-
-    mu = B / (tmp * 8)
-
-    Wmm1 = 1 / (mu - lamb)
-    print((Fore.LIGHTBLUE_EX + 'M/M/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmm1)
-
-    Wmd1 = (2 * mu - lamb) / (2 * mu * (mu - lamb))
+    Wmd1 = 1.0 * (2 * mu - lamb) / (2 * mu * (mu - lamb))
 
     print((Fore.LIGHTBLUE_EX + 'M/D/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmd1)
 
@@ -174,18 +111,90 @@ if __name__ == '__main__':
 
     print((Fore.LIGHTBLUE_EX + 'M/G/1:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % Wmg1)
 
-    row = lamb / mu
+    rho = 1.0 * lamb / mu
 
     som = 0
-    for i in range(0, K + 1):
-        som += row ** i
+    for i in range(0, K+1):
+        som += bigfloat.pow(rho, i)
 
-    pb = (row ** K) / som
+    pb = 1.0 * (bigfloat.pow(rho, K)) / som
 
-    lambm = (1 - pb) * lamb
+    lambm = (1 - pb)*lamb
 
-    Wmmk = (1 / lambm) * ((row / (1 - row)) - ((K + 1) * row ** (K + 1)) / (1 - row ** (K + 1)))
+    Wmmk = (1.0 / lambm) * (
+        (rho * 1.0 / (1 - rho)) - 1.0 * ((K + 1) * bigfloat.pow(rho, (K + 1))) / (1 - bigfloat.pow(rho, (K + 1))))
 
     print((Fore.LIGHTBLUE_EX + 'M/M/1/%d:' + Fore.GREEN + ' %f' + Style.RESET_ALL) % (K, Wmmk))
 
-    print((Fore.LIGHTBLUE_EX + 'M/M/1/%d:' + Fore.GREEN + ' %.2f%%') % (K, pb))
+    print((Fore.LIGHTBLUE_EX + 'M/M/1/%d:' + Fore.GREEN + ' %.2f%%' + Style.RESET_ALL) % (K, pb))
+
+    """
+    ######################
+            NODE 2
+    ######################
+    """
+    print " "
+
+    print Fore.BLUE + Style.BRIGHT + "NODE 2" + Style.RESET_ALL
+
+    env = simpy.Environment()
+
+    # Sender (tx) -> Node2 -> Link -> Receiver (rx)
+    lamb = 275.0
+    K = 128
+    B = 10e9
+    tmp = 782  # 0.5*1500+0.5*64 bytes em media
+
+    rx = pkt_Receiver(env, 'B')
+    tx = pkt_Sender(env, 'A', 'B', time_packets)
+    node2 = Node(env, 'N1', 350, K)
+    link = Link(env, 'L', B, np.inf)
+
+    tx.out = node2
+    node2.add_conn(link, 'B')
+    link.out = rx
+
+    simtime = 0
+
+    env.run()
+
+    print("---- lambda: %d, queue size: %d, B: %d, simtime: %d ----" % (lamb, K, B, simtime))
+    print('(1) Loss probability: %.2f%%' % (100.0 * ((tx.packets_sent - rx.packets_recv) / tx.packets_sent)))
+    print('(2) Loss probability: %.2f%%' % (100.0 * node2.lost_pkts / tx.packets_sent))
+    print('Average delay: %f sec' % (1.0 * rx.overalldelay / rx.packets_recv))
+    print('Transmitted bandwidth: %.1f Bytes/sec' % (1.0 * rx.overallbytes / simtime))
+
+    mu = 350
+
+    Wmm1 = 1.0 / (mu - lamb)
+    print('M/M/1: %f' % Wmm1)
+
+    Wmd1 = 1.0 * (2 * mu - lamb) / (2 * mu * (mu - lamb))
+
+    print('M/D/1: %f' % Wmd1)
+
+    mu1 = 1.0 * B / (1500 * 8)
+    mu2 = 1.0 * B / (64 * 8)
+    Es = 0.5 * (1.0 / mu) + 0.5 * (1.0 / mu)
+    Es2 = 0.5 * (1.0 / mu) ** 2 + 0.5 * (1.0 / mu) ** 2
+
+    Wmg1 = ((lamb * Es2) / 2 * (1 - (lamb * Es))) + Es
+
+    print('M/G/1: %f' % Wmg1)
+
+    rho = 1.0 * lamb / mu
+
+    som = 0
+    for i in range(0, K + 1):
+        som += bigfloat.pow(rho, i)
+
+    pb = (bigfloat.pow(rho, K)) / som
+
+    lambm = (1 - pb) * lamb
+
+    Wmmk = (1.0 / lambm) * (
+        (rho * 1.0 / (1 - rho)) - 1.0 * ((K + 1) * bigfloat.pow(rho, (K + 1))) / (1 - bigfloat.pow(rho, (K + 1))))
+
+    print('M/M/1/%d: %f' % (K, Wmmk))
+
+    print('M/M/1/%d: %.2f%%' % (K, pb))
