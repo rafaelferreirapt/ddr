@@ -7,7 +7,7 @@ import bigfloat
 import json
 
 
-DEBUG = False
+DEBUG = True
 
 
 def print_debug(text):
