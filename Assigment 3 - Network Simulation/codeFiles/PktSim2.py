@@ -27,7 +27,7 @@ if __name__ == '__main__':
             loss_probability = 0
             average_delay = 0
             trans_band = 0
-            for i in range(1, 3):
+            for i in range(1, 4):
                 env = simpy.Environment()
 
                 rx = pkt_Receiver(env, 'B')
@@ -94,14 +94,14 @@ if __name__ == '__main__':
 
             array = array + [{'lambda': lam,
                               'queueSize': k,
-                              'Loss probability': round(loss_probability/2, 5),
-                              'Average delay': round(average_delay/2, 5),
-                              'Transmitted bandwidth': round(trans_band/2, 5),
-                              'M/M/1': round(Wmm1/2, 5),
-                              'M/D/1': round(Wmd1/2, 5),
-                              'M/G/1': round(Wmg1/2, 5),
-                              'M/M/1/K': round(float(Wmmk)/2, 5),
-                              'M/M/1/K%': round(float(100*pb)/2, 5)}]
+                              'Loss probability': round(loss_probability/3, 5),
+                              'Average delay': round(average_delay/3, 5),
+                              'Transmitted bandwidth': round(trans_band/3, 5),
+                              'M/M/1': round(Wmm1/3, 5),
+                              'M/D/1': round(Wmd1/3, 5),
+                              'M/G/1': round(Wmg1/3, 5),
+                              'M/M/1/K': round(float(Wmmk)/3, 5),
+                              'M/M/1/K%': round(float(100*pb)/3, 5)}]
 
     with open('pktSim2.json', 'w') as outfile:
         json.dump(array, outfile)

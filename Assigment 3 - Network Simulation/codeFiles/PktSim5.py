@@ -21,7 +21,7 @@ if __name__ == '__main__':
             loss_probability = 0
             average_delay = 0
             trans_band = 0
-            for i in range(1, 3):
+            for i in range(1, 4):
                 env = simpy.Environment()
 
                 rx = pkt_Receiver(env, 'B')
@@ -52,12 +52,12 @@ if __name__ == '__main__':
                 Wk += 2.0 / (mu-lam)
             array.append({'lambda': lam,
                           'queueSize': k,
-                          'Wk': round(Wk/2, 5),
-                          'Loss Probability': round(loss_probability/2, 5),
-                          'Average Delay': round(average_delay/2, 5),
-                          'Transmitted bandwidth': round(trans_band/2, 5)})
+                          'Wk': round(Wk/3, 5),
+                          'Loss Probability': round(loss_probability/3, 5),
+                          'Average Delay': round(average_delay/3, 5),
+                          'Transmitted bandwidth': round(trans_band/3, 5)})
 
-            print ("Wk: %f" % (Wk/2))
+            print ("Wk: %f" % (Wk/3))
 
     print array
 

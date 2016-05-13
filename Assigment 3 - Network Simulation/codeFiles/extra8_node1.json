@@ -1,1 +1,50 @@
-[{"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 215199.48, "queueSize": 64, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 150}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107073.20667, "queueSize": 96, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 108073.62, "queueSize": 128, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107793.6, "queueSize": 10000, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107460.92667, "queueSize": 64, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 300}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107930.02, "queueSize": 96, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107910.87333, "queueSize": 128, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107903.69333, "queueSize": 10000, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107757.7, "queueSize": 64, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 450}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107781.63333, "queueSize": 96, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107975.49333, "queueSize": 128, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}, {"M/M/1/K%": 0.0, "M/D/1": 0.0, "M/M/1": 0.0, "Average delay": 0.0, "M/M/1/K": 0.0, "Transmitted bandwidth": 107994.64, "queueSize": 10000, "Loss probability": 0.0, "M/G/1": 0.0, "lambda": 275.0}]
+[
+  {
+    "lambda": 275,
+    "queueSize": 64,
+    "Loss probability": 85.82314,
+    "Average delay": 0.14296,
+    "Transmitted bandwidth": 30580.01333,
+    "M/M/1": 0.02237,
+    "M/D/1": 0.01275,
+    "M/G/1": 0.00347,
+    "M/M/1/K": 0.02236,
+    "M/M/1/K%": 0.00091
+  },
+  {
+    "M/M/1/K%": 0.00001,
+    "M/D/1": 0.01275,
+    "M/M/1": 0.02237,
+    "Average delay": 0.20026,
+    "M/M/1/K": 0.02237,
+    "Transmitted bandwidth": 16297.18667,
+    "queueSize": 96,
+    "Loss probability": 84.90369,
+    "M/G/1": 0.00347,
+    "lambda": 275
+  },
+  {
+    "M/M/1/K%": 0,
+    "M/D/1": 0.01275,
+    "M/M/1": 0.02237,
+    "Average delay": 0.25237,
+    "M/M/1/K": 0.02237,
+    "Transmitted bandwidth": 17164.36667,
+    "queueSize": 128,
+    "Loss probability": 84.05209,
+    "M/G/1": 0.00347,
+    "lambda": 275
+  },
+  {
+    "M/M/1/K%": 0,
+    "M/D/1": 0.01275,
+    "M/M/1": 0.02237,
+    "Average delay": 14.94243,
+    "M/M/1/K": 0.02237,
+    "Transmitted bandwidth": 92469.32,
+    "queueSize": 10000,
+    "Loss probability": 13.61478,
+    "M/G/1": 0.00347,
+    "lambda": 275
+  }
+]
