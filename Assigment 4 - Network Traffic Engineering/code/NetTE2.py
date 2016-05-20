@@ -54,7 +54,7 @@ sol = {}
 ws_delay = {}
 
 for pair in allpairs:
-    path = nx.shortest_path(net, pair[0], pair[1], weight='distance')
+    path = nx.shortest_path(net, pair[0], pair[1], weight='load')
     sol.update({pair: path})
 
     delay = 0
