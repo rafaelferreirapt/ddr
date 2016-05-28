@@ -1,8 +1,9 @@
-import math
-import numpy
-import urllib2
 import json
+import math
 import time
+import urllib2
+
+import numpy
 
 
 def getgeo(string):

@@ -54,6 +54,9 @@ allpairs = list(itertools.permutations(nodes, 2))
 tm = {}
 
 N = len(nodes)
+
+# se quisermos aumentar e multiplicar o TM por X
+
 if 'tm' not in locals() or tm == {}:
     print("Generating random traffic matric (tm)...\n")
     tm = {}

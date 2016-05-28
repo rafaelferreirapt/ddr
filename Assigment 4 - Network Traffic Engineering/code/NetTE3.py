@@ -46,7 +46,7 @@ for link in links:
 # print(link,dist,(pos[link[0]][1],pos[link[0]][0]),(pos[link[1]][1],pos[link[1]][0]))
 
 nx.draw(net, pos, with_labels=True)
-plt.show()
+#plt.show()
 
 allpairs = list(itertools.permutations(nodes, 2))
 sol = {}
@@ -54,18 +54,17 @@ sol = {}
 ws_delay = {}
 
 for pair in allpairs:
-    path = nx.shortest_path(net, pair[0], pair[1], weight='distance')
+    path = nx.shortest_path(net, pair[0], pair[1], weight='delay')
     sol.update({pair: path})
-
-    delay = 0
 
     for i in range(0, len(path) - 1):
         net[path[i]][path[i + 1]]['load'] += tm[pair[0]][pair[1]]
-        delay_transmission = net[path[i]][path[i + 1]]['distance'] / lightspeed
-        delay += 1e6 / (mu - net[path[i]][path[i + 1]]['load']) + 1e6 * delay_transmission
-        # 1e6 para micro segundos
+        net[path[i]][path[i + 1]]['delay'] = 1e6 / (mu - net[path[i]][path[i + 1]]['load'])
 
-    ws_delay[pair] = delay
+for pair in allpairs:
+    path = sol[pair]
+    for i in range(0, len(path) - 1):
+        ws_delay[pair] = net[path[i]][path[i + 1]]['delay']
 
 print('---')
 print('Solution:' + str(sol))
@@ -80,15 +79,15 @@ print('\n\nMean one-way delay: %.2f micro seg\nMaximum one-way delay: %.2f micro
 
 print('---')
 
-loadAll = {}
+delayAll = {}
 
 for link in links:
-    print("#link %s-%s: %d pkts/sec" % (link[0], link[1], net[link[0]][link[1]]['load']))
-    print("#link %s-%s: %d pkts/sec" % (link[1], link[0], net[link[1]][link[0]]['load']))
+    print("#link %s-%s: %f micro seg" % (link[0], link[1], net[link[0]][link[1]]['delay']))
+    print("#link %s-%s: %f micro seg" % (link[1], link[0], net[link[1]][link[0]]['delay']))
 
-    loadAll.update({(link[0], link[1]): net[link[0]][link[1]]['load']})
-    loadAll.update({(link[1], link[0]): net[link[1]][link[0]]['load']})
+    delayAll.update({(link[0], link[1]): net[link[0]][link[1]]['delay']})
+    delayAll.update({(link[1], link[0]): net[link[1]][link[0]]['delay']})
 
-meanLoad, maxLoad, maxLoadK = listStats(loadAll)
-print('\n\nMean one-way load: %.2f micro seg\nMaximum one-way load: %.2f micro seg'
+meanLoad, maxLoad, maxLoadK = listStats(delayAll)
+print('\n\nMean one-way delay: %f micro seg\nMaximum one-way delay: %f micro seg'
       '\nflow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))

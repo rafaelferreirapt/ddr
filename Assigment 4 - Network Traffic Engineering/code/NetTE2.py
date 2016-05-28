@@ -57,15 +57,13 @@ for pair in allpairs:
     path = nx.shortest_path(net, pair[0], pair[1], weight='load')
     sol.update({pair: path})
 
-    delay = 0
-
     for i in range(0, len(path) - 1):
         net[path[i]][path[i + 1]]['load'] += tm[pair[0]][pair[1]]
-        delay_transmission = net[path[i]][path[i + 1]]['distance'] / lightspeed
-        delay += 1e6 / (mu - net[path[i]][path[i + 1]]['load']) + delay_transmission
-        # 1e6 para micro segundos
 
-    ws_delay[pair] = delay
+for pair in allpairs:
+    path = sol[pair]
+    for i in range(0, len(path) - 1):
+        ws_delay[pair] = 1e6 / (mu - net[path[i]][path[i + 1]]['load'])
 
 print('---')
 print('Solution:' + str(sol))
