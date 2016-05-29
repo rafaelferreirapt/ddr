@@ -1,7 +1,7 @@
 # coding=utf-8
 import argparse
 import itertools
-import json
+
 import pickle
 import os
 import matplotlib.pyplot as plt
