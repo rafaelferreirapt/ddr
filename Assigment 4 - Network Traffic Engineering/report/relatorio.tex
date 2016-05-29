@@ -58,37 +58,62 @@
 
 \section{Virtual-Circuit Switched Network}
 
-\subsection{Exercício 1 e 2}
+\subsection{Exercício 1}
 
-Nestes primeiros exercícios era pedido que se obtivesse os valores de probabilidade de bloqueio e de carga média do link, tanto de forma simulada como teórica, para vários valores de $\lambda$ (média de pedidos de chamadas por minuto), 1/$\mu$ (média da duração de cada chamada, em minutos), onde cada circuito virtual (VC), requer uma largura de banda de 2 Mbits/sec e o link pode tomar vários valores de largura de banda.
+Para iniciar este trabalho foi-nos dado vários ficheiros de base. O ficheiro NetGen.py é responsável por gerar uma rede, com vários nós que inclui o nome e localização geográfica, e as ligações inter-nó, matrizes de tráfego que define os fluxos de tráfego entre todas as cidades/ nós.
+
+A localização geográfica (pos) é obtida dinamicamente a partir do nome do no (nome da cidade) usando a API do Google Maps, ficheiro getGeo.py. 
+
+A matriz de tráfego (TM) é gerado aleatóriamente. É possível também guardar o resultado num ficheiro .dat e passando como argumento o parâmetro -f, net.dat.
+
+\begin{figure}[!htb]
+  \centering
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{imagensGuia/esquema_rede_pequena.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{imagensGuia/esquema_rede_grande.png}
+  \end{minipage}
+  \caption{Rede pequena de teste e rede grande}
+\end{figure}
 
 
-Foram obtidos os seguintes resultados para cada valor de largura de banda do link:
+\subsection{Exercício 2, 3 e 4}
 
-Nos três casos, é possível observar-se o valor simulado (linha contínua) e o valor teórico (linha picotada), para os vários tempos médios de duração de uma chamada.
+No exercício 2 é usado o caminho mais curto como escolha para o caminho entre pontos, sendo que isto é dado pela soma das conexões e usando o algoritmo Greedy.
 
-Através da figura 1, onde a largura de banda do link é de 16 Mbits/seg é possível ver que a probabilidade de bloqueio é muito maior, comparando com a figura 3, onde a largura de banda é o dobro, 32 Mbits/sec. Como existe mais largura de banda no link, para um mesmo número de pedidos de chamadas, estas bloqueiam em menos quantidade, pois é possível processar um maior número de pedidos. 
+No exercício 3, foi calculado o "average one-way delay" e a carga em todas as direções em todos os links.
 
-Em todos os gráficos, é possível observar-se que à medida que a taxa de chamadas vai aumentando, a probabilidade de bloqueio e a ocupação média do link também vão aumentar, pois são mais pedidos para processar.
+Para isso, para calcular o "average one-way delay", foi usada a seguinte fórmula baseada na aproximação Kleinrock:
 
-Relativamente à duração das chamadas, quando esta aumenta, a probabilidade de bloqueio e a ocupação média do link também vão aumentar, pois as chamadas ocuparão por mais tempo o link, com a mesma taxa de pedidos.
+$\mu$ = 1e9 / 8000 , é igual ao link speed em pkts/sec (1Gbps)
 
-\newpage
-\subsection{Exercício 3}
+\[W = 1e6\times\left[\frac{1}{\left(\mu-atraso\right)}\right]\]
 
-Neste terceiro exercício, as chamadas passaram a ser de dois tipos, um standard e um special. As chamadas standard requerem uma largura de banda de 2 Mbits/sec e as special requerem uma largura de banda de 4 Mbits/sec. Neste caso, os nós possuem ainda uma quantidade de Mbit/s reservados para os pedidos especiais. Foram obtidos os resultados da simulação para vários valores de $\lambda$ standard e special, 1/$\mu$, largura de banda do link e largura de banda reservada.
+Para calcular o atraso, teve de se criar um ciclo de forma a percorrer todos os links e criar uma lista com os atrasos.
 
-Obtiveram-se os seguintes resultados, através da execução de 3 amostras:
+\begin{lstlisting}[language=python]
+for pair in allpairs:
+    path = sol[pair]
+    for i in range(0, len(path) - 1):
+        ws_delay[pair] = 1e6 / (mu - \
+        net[path[i]][path[i + 1]]['load'])
+\end{lstlisting}
 
-Observando os gráficos acima, é possível observar-se que quanto maior for a capacidade do link, os pedidos standard, começam a bloquear menos vezes. É possível verificar que quanto maior o valor de largura de banda reservada, melhores serão os pedidos special, e pior os standard. 
+Após isso foi possível apresentar a seguinte tabela para a rede pequena:
 
-Na figura 4, o link possuí uma largura de banda de 16 Mbits/sec, e a largura de banda reservada, sendo 16 Mbits/sec, faz com que os pedidos standard bloqueiem 100\% das vezes, pois toda a largura de banda existente está disponível apenas para os pedidos special.
+\input{./tables/smallnet_netTE1.tex}
 
-Nas figuras 5 e 6, o valor da largura de banda do link vai aumentado. Com isto, a probabilidade de bloqueio dos pedidos standard vai diminuindo. A maior diminuição verifica-se quando a duração dos pedidos é a mais curta, linha azul, isto porque, tal como se verificou no primeiro exercício quanto mais baixa for a duração do pedido, menor será a probabilidade de bloqueio.
+Analisando a tabela obtida conseguimos perceber que o link Aveiro-Porto tem o máximo delay de 16.14 micro segundos e a carga máxima está de Aveiro ao Porto com 63050 pacotes/ segundo.
 
-Com o aumento da largura de banda do link, os pedidos especiais também terão menor probabilidade de bloqueio, tal como se verificou no exercício 1.
+\input{./tables/smallnet_netTE1_stats1.tex}
 
-Para este exercício foram criados dois geradores de pedidos, um para pedidos standard, e outro para pedidos special.
+\input{./tables/smallnet_netTE1_stats2.tex}
+
+
+% Para a rede grande foi gerados os seguintes resultados:
+% \input{./tables/network_netTE1.tex}
 
 \newpage
 \end{document}

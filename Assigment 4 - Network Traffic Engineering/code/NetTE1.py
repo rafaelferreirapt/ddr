@@ -1,11 +1,14 @@
+# coding=utf-8
 import argparse
 import itertools
+import json
 import pickle
-
+import os
 import matplotlib.pyplot as plt
+from collections import OrderedDict
 import networkx as nx
 import numpy as np
-
+from json_to_latex import JsonToLatex
 from mygeo import geodist
 
 mu = 1e9 / 8000  # link speed in pkts/sec
@@ -46,7 +49,7 @@ for link in links:
 # print(link,dist,(pos[link[0]][1],pos[link[0]][0]),(pos[link[1]][1],pos[link[1]][0]))
 
 nx.draw(net, pos, with_labels=True)
-plt.show()
+# plt.show()
 
 allpairs = list(itertools.permutations(nodes, 2))
 sol = {}
@@ -57,18 +60,33 @@ for pair in allpairs:
     path = nx.shortest_path(net, pair[0], pair[1], weight='distance')
     sol.update({pair: path})
 
-    delay = 0
-
     for i in range(0, len(path) - 1):
         net[path[i]][path[i + 1]]['load'] += tm[pair[0]][pair[1]]
-        delay_transmission = net[path[i]][path[i + 1]]['distance'] / lightspeed
-        delay += 1e6 / (mu - net[path[i]][path[i + 1]]['load']) + 1e6 * delay_transmission
-        # 1e6 para micro segundos
 
-    ws_delay[pair] = delay
+for pair in allpairs:
+    path = sol[pair]
+    for i in range(0, len(path) - 1):
+        ws_delay[pair] = 1e6 / (mu - net[path[i]][path[i + 1]]['load'])
 
 print('---')
 print('Solution:' + str(sol))
+
+# export to tex
+table = []
+
+for key, value in sol.items():
+    table += [OrderedDict([
+        ("Origem", key[0]),
+        ("Destino", key[1]),
+        ("Saltos", ", ".join(value)),
+        ("Carga (pkts/sec)", net[key[0]][key[1]]['load'] if key[0] in net and key[1] in net[key[0]] else "Indisponível"),
+        ("Atraso (micro/sec)", ("%0.2f" % ws_delay[(key[0], key[1])]))
+    ])]
+
+t = JsonToLatex(table, title="Solução obtida, carga nos links e atraso")
+t.convert()
+t.save("../report/tables/" + filename.replace(".dat", "_") + "netTE1.tex")
+# export to tex
 
 print('---')
 for pair in allpairs:
@@ -76,7 +94,17 @@ for pair in allpairs:
 
 meanWs, maxWs, maxWsK = listStats(ws_delay)
 print('\n\nMean one-way delay: %.2f micro seg\nMaximum one-way delay: %.2f micro seg'
-      '\nflow %s-%s' % (meanWs, maxWs, maxWsK[0], maxWsK[1]))
+      '\nMax one-way delay flow %s-%s' % (meanWs, maxWs, maxWsK[0], maxWsK[1]))
+
+# export to tex
+table_stats1 = [OrderedDict({"Mean one-way delay": meanWs,
+                             "Maximum one-way delay": maxWs,
+                             "Maximum one-way delay flow": "%s-%s" % (maxWsK[0], maxWsK[1])})]
+
+t = JsonToLatex(table_stats1, title="Atraso")
+t.convert()
+t.save("../report/tables/" + filename.replace(".dat", "_") + "netTE1_stats1.tex")
+# export to tex
 
 print('---')
 
@@ -90,5 +118,15 @@ for link in links:
     loadAll.update({(link[1], link[0]): net[link[1]][link[0]]['load']})
 
 meanLoad, maxLoad, maxLoadK = listStats(loadAll)
-print('\n\nMean one-way load: %.2f micro seg\nMaximum one-way load: %.2f micro seg'
-      '\nflow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
+print('\n\nMean one-way load: %.2f pkts/sec\nMaximum one-way load: %.2f pkts/sec'
+      '\nMax load flow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
+
+# export to tex
+table_stats2 = [OrderedDict({"Mean one-way load": "%.2f pkts/sec" % meanLoad,
+                             "Maximum one-way load": "%.2f pkts/sec" % maxLoad,
+                             "Max load flow": "%s-%s" % (maxLoadK[0], maxLoadK[1])})]
+
+t = JsonToLatex(table_stats2, title="Carga")
+t.convert()
+t.save("../report/tables/" + filename.replace(".dat", "_") + "netTE1_stats2.tex")
+# export to tex
