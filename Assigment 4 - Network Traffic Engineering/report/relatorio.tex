@@ -58,9 +58,7 @@
 
 \clearpage
 
-\section{Virtual-Circuit Switched Network}
-
-\subsection{Exercício 1}
+\section{Exercício 1}
 
 Para iniciar este trabalho foi-nos dado vários ficheiros de base. O ficheiro NetGen.py é responsável por gerar uma rede, com vários nós que inclui o nome e localização geográfica, e as ligações inter-nó, matrizes de tráfego que define os fluxos de tráfego entre todas as cidades/ nós.
 
@@ -81,7 +79,7 @@ A matriz de tráfego (TM) é gerado aleatóriamente. É possível também guarda
 \end{figure}
 
 
-\subsection{Exercício 2, 3 e 4}
+\section{Exercício 2, 3 e 4}
 
 No exercício 2 é usado o caminho mais curto como escolha para o caminho entre pontos, sendo que isto é dado pela soma das conexões e usando o algoritmo Greedy.
 
@@ -105,23 +103,50 @@ for pair in allpairs:
 
 Após isso foi possível apresentar a seguinte tabela para a rede pequena:
 
+\input{./tables/smallnet_netTE1.tex}
+
 Analisando a tabela obtida conseguimos perceber que o link Aveiro-Porto tem o máximo delay de 16.14 micro segundos e a carga máxima está de Aveiro ao Porto com 63050 pacotes/ segundo.
 
 \input{./tables/smallnet_netTE1_stats1.tex}
 
 \input{./tables/smallnet_netTE1_stats2.tex}
 
+\newpage
 
-%\section{Anexos}
-%\input{./tables/smallnet_netTE1.tex}
-%\input{./tables/smallnet_netTE2.tex}
-%\input{./tables/smallnet_netTE3.tex}
-%\input{./tables/smallnet_netTE4.tex}
+\section{Exercício 5, 6 e 7}
 
-%\input{./tables/network_netTE1.tex}
-%\input{./tables/network_netTE2.tex}
-%\input{./tables/network_netTE3.tex}
-%\input{./tables/network_netTE4.tex}
+No exercício 5 foi pedido que o routing agora fosse feito usando como parâmetro de escolha a menor carga possível, otimizando assim a largura de banda disponível  ao longo do caminho.
+
+A nível de código, a única mudança efetuada importante foi:
+\begin{lstlisting}[language=python]
+path = nx.shortest_path(net, pair[0], pair[1], weight='load')
+\end{lstlisting}
+
+Pois agora o critério para escolha do caminho mais curto é a carga.
+
+Para a rede pequena o resultado obtido foi:
+
+\input{./tables/smallnet_netTE2.tex}
+
+Analisando a tabela e os resultados obtidos conseguimos perceber que houve mudança na distribuição dos caminhos mais curtos, por exemplo, Porto > Lisboa agora o caminho é feito por Porto, Viseu e Lisboa, já de Lisboa > Porto é feito por Lisboa, Viseu, Porto.
+
+Este resultado é explicado porque a lista de pares da rede pequena está distribuída da seguinte forma:
+
+\begin{lstlisting}[language=python]
+[('Lisboa', 'Viseu'), ('Lisboa', 'Aveiro'),
+('Lisboa', 'Porto'), ('Viseu', 'Lisboa'), ('Viseu', 'Aveiro'),
+('Viseu', 'Porto'), ('Aveiro', 'Lisboa'), ('Aveiro', 'Viseu'), 
+('Aveiro', 'Porto'), ('Porto', 'Lisboa'), ('Porto', 'Viseu'),
+('Porto', 'Aveiro')]
+\end{lstlisting}
+
+Inicialmente, irá testar a ligação Lisboa > Viseu, à qual será atribuída, depois Lisboa > Aveiro e será também atribuída, de seguida, Lisboa > Porto, como o somatório das cargas entre as ligações Lisboa > Viseu + Viseu > Porto tem menos carga do que a Lisboa > Aveiro + Aveiro > Porto então seleciona ir por Viseu, daí a diferença nos resultados em relação ao primeiro exercício.
+ 
+Na diferença de Porto > Lisboa, temos Porto > Aveiro (0)  + Aveiro > Lisboa (31188) com mais carga do que Porto > Viseu (0) + Viseu > Lisboa (31171) no momento de atribuição, o que faz com que seja selecionado o caminho: Porto > Viseu > Lisboa.
+
+\input{./tables/smallnet_netTE2_stats1.tex}
+
+\input{./tables/smallnet_netTE2_stats2.tex}
 
 \newpage
 
