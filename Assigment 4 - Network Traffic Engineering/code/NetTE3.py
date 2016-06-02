@@ -110,17 +110,17 @@ t.save("../report/tables/" + filename.replace(".dat", "_") + "netTE3_stats1.tex"
 
 print('---')
 
-delayAll = {}
+loadAll = {}
 
 for link in links:
-    print("#link %s-%s: %f micro seg" % (link[0], link[1], net[link[0]][link[1]]['delay']))
-    print("#link %s-%s: %f micro seg" % (link[1], link[0], net[link[1]][link[0]]['delay']))
+    print("#link %s-%s: %d pkts/sec" % (link[0], link[1], net[link[0]][link[1]]['load']))
+    print("#link %s-%s: %d pkts/sec" % (link[1], link[0], net[link[1]][link[0]]['load']))
 
-    delayAll.update({(link[0], link[1]): net[link[0]][link[1]]['delay']})
-    delayAll.update({(link[1], link[0]): net[link[1]][link[0]]['delay']})
+    loadAll.update({(link[0], link[1]): net[link[0]][link[1]]['load']})
+    loadAll.update({(link[1], link[0]): net[link[1]][link[0]]['load']})
 
-meanLoad, maxLoad, maxLoadK = listStats(delayAll)
-print('\n\nMean one-way delay: %f micro seg\nMaximum one-way delay: %f micro seg'
+meanLoad, maxLoad, maxLoadK = listStats(loadAll)
+print('\n\nMean one-way load: %.2f micro seg\nMaximum one-way load: %.2f micro seg'
       '\nMax load flow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
 
 # export to tex

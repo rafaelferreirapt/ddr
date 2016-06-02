@@ -155,6 +155,38 @@ Com este exercício, mudando o critério para carga nos links na escolha do cami
 
 \section{Exercício 8, 9 e 10}
 
+No exercício 8 pretende-se que seja escolhido o caminho mais curto tendo em conta o atraso, minimizando assim o "average one-way delay". Este por sua vez irá sempre escolher de forma sequencial, o que fará com que seja sempre na mesma ordem.
+
+A nível de código, a única mudança efetuada importante foi:
+\begin{lstlisting}[language=python]
+path = nx.shortest_path(net, pair[0], pair[1],
+	 weight='delay')
+...
+net[path[i]][path[i + 1]]['delay'] = 1e6 / 
+	(mu - net[path[i]][path[i + 1]]['load'])
+\end{lstlisting}
+
+\newpage
+
+O critério agora é o atraso, e para calcular o atraso usou-se a aproximação M/M/1.
+
+Para a rede pequena o resultado obtido foi:
+
+\input{./tables/smallnet_netTE3.tex}
+
+Nesta tabela em relação ao exercício anterior não houve mudanças, isto devido à ordem ser a mesma de atribuição.
+
+\input{./tables/smallnet_netTE3_stats1.tex}
+
+\input{./tables/smallnet_netTE3_stats2.tex}
+
+Como se pode observar, para a rede pequena manteve-se igual.
+
+\input{./tables/network_netTE3_stats1.tex}
+
+\input{./tables/network_netTE3_stats2.tex}
+
+
 
 \newpage
 
