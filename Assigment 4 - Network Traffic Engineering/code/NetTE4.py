@@ -102,7 +102,7 @@ for key, value in sol_best.items():
     table += [OrderedDict([
         ("Origem", key[0]),
         ("Destino", key[1]),
-        ("Saltos", ", ".join(value)),
+        ("Caminho", ", ".join(value)),
         ("Carga (pkts/sec)", net_best[key[0]][key[1]]['load'] if key[0] in net_best and key[1] in net_best[key[0]] else "Indisponível"),
         ("Atraso (micro/sec)", ("%0.2f" % ws_delay_best[(key[0], key[1])]))
     ])]

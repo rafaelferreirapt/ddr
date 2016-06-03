@@ -81,7 +81,7 @@ for key, value in sol.items():
     table += [OrderedDict([
         ("Origem", key[0]),
         ("Destino", key[1]),
-        ("Saltos", ", ".join(value)),
+        ("Caminho", ", ".join(value)),
         ("Carga (pkts/sec)", net[key[0]][key[1]]['load'] if key[0] in net and key[1] in net[key[0]] else "Indisponível"),
         ("Atraso (micro/sec)", ("%0.2f" % ws_delay[(key[0], key[1])]))
     ])]
