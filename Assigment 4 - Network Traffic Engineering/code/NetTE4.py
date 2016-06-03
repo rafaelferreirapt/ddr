@@ -132,23 +132,23 @@ t.save("../report/tables/" + filename.replace(".dat", "_") + "netTE4_stats1.tex"
 
 print('---')
 
-delayAll = {}
+loadAll = {}
 
 for link in links:
-    print("#link %s-%s: %f micro seg" % (link[0], link[1], net_best[link[0]][link[1]]['delay']))
-    print("#link %s-%s: %f micro seg" % (link[1], link[0], net_best[link[1]][link[0]]['delay']))
+    print("#link %s-%s: %d pkts/sec" % (link[0], link[1], net[link[0]][link[1]]['load']))
+    print("#link %s-%s: %d pkts/sec" % (link[1], link[0], net[link[1]][link[0]]['load']))
 
-    delayAll.update({(link[0], link[1]): net_best[link[0]][link[1]]['delay']})
-    delayAll.update({(link[1], link[0]): net_best[link[1]][link[0]]['delay']})
+    loadAll.update({(link[0], link[1]): net[link[0]][link[1]]['load']})
+    loadAll.update({(link[1], link[0]): net[link[1]][link[0]]['load']})
 
-meanLoad, maxLoad, maxLoadK = listStats(delayAll)
-print('\n\nMean one-way delay: %f micro seg\nMaximum one-way delay: %f micro seg'
-      '\nMax delay flow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
+meanLoad, maxLoad, maxLoadK = listStats(loadAll)
+print('\n\nMean one-way load: %.2f pkts/sec\nMaximum one-way load: %.2f pkts/sec'
+      '\nMax load flow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
 
 # export to tex
-table_stats2 = [OrderedDict({"Mean one-way delay": "%.2f pkts/sec" % meanLoad,
-                             "Maximum one-way delay": "%.2f pkts/sec" % maxLoad,
-                             "Max delay flow": "%s-%s" % (maxLoadK[0], maxLoadK[1])})]
+table_stats2 = [OrderedDict({"Mean one-way load": "%.2f pkts/sec" % meanLoad,
+                             "Maximum one-way load": "%.2f pkts/sec" % maxLoad,
+                             "Max load flow": "%s-%s" % (maxLoadK[0], maxLoadK[1])})]
 
 t = JsonToLatex(table_stats2, title="Carga")
 t.convert()

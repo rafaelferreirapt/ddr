@@ -119,7 +119,7 @@ for link in links:
     loadAll.update({(link[1], link[0]): net[link[1]][link[0]]['load']})
 
 meanLoad, maxLoad, maxLoadK = listStats(loadAll)
-print('\n\nMean one-way load: %.2f micro seg\nMaximum one-way load: %.2f micro seg'
+print('\n\nMean one-way load: %.2f pkts/sec\nMaximum one-way load: %.2f pkts/sec'
       '\nMax load flow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
 
 # export to tex
