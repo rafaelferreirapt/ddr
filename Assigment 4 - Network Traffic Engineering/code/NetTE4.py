@@ -85,7 +85,7 @@ for i in range(0, 10000):
     tmp_stats = listStats(ws_delay)
 
     # best solution
-    if liststats_result is None or liststats_result[1] > tmp_stats[1]:
+    if liststats_result is None or liststats_result[0] > tmp_stats[0]:
         allpairs_best = allpairs
         sol_best = sol.copy()
         ws_delay_best = ws_delay.copy()
