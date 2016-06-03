@@ -105,13 +105,13 @@ Após isso foi possível apresentar a seguinte tabela para a rede pequena:
 
 \input{./tables/smallnet_netTE1.tex}
 
-Analisando a tabela obtida conseguimos perceber que o link Aveiro-Porto tem o máximo delay de 16.14 micro segundos e a carga máxima está de Aveiro ao Porto com 63050 pacotes/ segundo.
+Analisando a tabela obtida conseguimos perceber que o caminho Lisboa-Porto tem o máximo delay de 32.19 micro segundos, carga média de 16.01 micro segundos, a carga máxima está de Aveiro ao Porto com 63050 pacotes/ segundo e carga média de 43797.40 pacotes/ segundo.
 
 \input{./tables/smallnet_netTE1_stats1.tex}
 
 \input{./tables/smallnet_netTE1_stats2.tex}
 
-Para a rede grande, obteve-se o máximo delay de 16.25 micro segundos e a carga máxima de Aveiro-Porto com 63497 pacotes/ segundo.
+Para a rede grande, obteve-se o máximo delay de 83.61 micro segundos para o caminho entre Granada e a Corunha, atraso médio de 30.44 micro segundos, e a carga máxima de Aveiro-Porto com 63497 pacotes/ segundo e a carga média de 22735.10 pacotes/segundo.
 
 \input{./tables/network_netTE1_stats1.tex}
 
@@ -121,7 +121,7 @@ Para a rede grande, obteve-se o máximo delay de 16.25 micro segundos e a carga 
 
 \section{Exercício 5, 6 e 7}
 
-No exercício 5 foi pedido que o routing agora fosse feito usando como parâmetro de escolha a menor carga possível, otimizando assim a largura de banda disponível  ao longo do caminho.
+No exercício 5 foi pedido que o routing agora fosse feito usando como parâmetro de escolha do caminho mais curto a menor carga possível, otimizando assim a largura de banda disponível  ao longo do caminho.
 
 A nível de código, a única mudança efetuada importante foi:
 \begin{lstlisting}[language=python]
@@ -154,15 +154,22 @@ Na diferença de Porto > Lisboa, temos Porto > Aveiro (0)  + Aveiro > Lisboa (31
 
 \input{./tables/smallnet_netTE2_stats2.tex}
 
-Com este exercício, mudando o critério para carga nos links na escolha do caminho mais curto, conseguimos melhorias no "maximum one-way delay" de (-0,108 microseg)   e no "maximum one-way load" (-319 pkts/sec). 
+Com este exercício, mudando o critério para carga nos links na escolha do caminho mais curto, para a rede pequena, conseguiu-se melhorias no "maximum one-way delay" de -0,108 micro segundos, no atraso médio de -0,0012 micro segundos, no "maximum one-way load" de -319 pkts/sec e a carga média manteve-se como esperado.
+
+Dado que agora o pretendido era querer-se melhorias em termos de carga, estas foram obtidas para a rede pequena.
 
 %32.1869758326-32.0852532284=0,1017226042 micro sec
 %63050.00-62731.00=319 pkts/sec
+%16.010093405-16.0089473288=0,0011460762 micro sec
+%43797.40 = 
+\newpage
 
-Já para a rede grande, dado que o critério agora é a carga, as mudanças são superiores ao exercício anterior, conseguindo-se melhorias no "maximum one-way delay" de (-5.109 microseg)   e no "maximum one-way load" (-28182 pkts/sec).  
+Para a rede grande, obteve-se o máximo delay de 80.19 micro segundos para o caminho entre Valencia e Badajoz, o que significa uma melhoria de 3,42 micro segundos, já atraso médio de desceu 1,80 micro segundos em relação ao exercício anterior, e obteve-se a carga máxima de Aveiro-Porto com 35315 pacotes/ segundo (melhoria de 28182 pacotes/segundo)  e a carga média de 23310.10 pacotes/segundo (melhoria de 575,1 pacotes/segundo).
 
-%16.2593694617-11.1501365892=5.1092328725 micro sec
-%63497.00-35315.00=28182 pkts/sec
+%83.6110516972-80.1875239088=3,42
+%30.439503777-28.6383060926=1,80
+%63497-35315=28182
+%22735-23310.10=575,1
 
 \input{./tables/network_netTE2_stats1.tex}
 
@@ -183,13 +190,13 @@ net[path[i]][path[i + 1]]['delay'] = 1e6 /
 
 O critério agora é o atraso, e para calcular o atraso usou-se a aproximação M/M/1.
 
+\newpage
+
 Para a rede pequena o resultado obtido foi:
 
 \input{./tables/smallnet_netTE3.tex}
 
 Nesta tabela em relação ao exercício anterior não houve mudanças, isto devido à ordem ser a mesma de atribuição.
-
-\newpage
 
 \input{./tables/smallnet_netTE3_stats1.tex}
 
@@ -197,10 +204,12 @@ Nesta tabela em relação ao exercício anterior não houve mudanças, isto devi
 
 Como se pode observar, para a rede pequena manteve-se igual.
 
-Já para a rede grande, neste caso, não existiu melhorias, no "maximum one-way delay" de (+0,011 microseg)   e no "maximum one-way load" (+88 pkts/sec).  
+Já para a rede grande, como o critério agora é o atraso, espera-se que se tenha obtido melhorias, comparando com o exercício anterior, existiu melhorias, no máximo delay de 0,97 micro segundos para o mesmo caminho do exercício anterior, já o atraso médio desceu também 0,72 micro segundos e obteve-se a carga máxima também de Aveiro ao Porto, piorando em +88 pacotes por segundo sendo que a carga média diminuiu em 557,67 pacotes/segundo.
 
-%11.1501365892-11.1610879829=+0,0109513937 micro sec
-%35315.00-35403.00=+88 pkts/sec
+% 80.1875239088-79.2209331482=0,9665907606
+% 28.6383060926-27.922949817=0,7153562756
+% 35315-35403
+% 23310.48-22752.81=557,67
 
 \input{./tables/network_netTE3_stats1.tex}
 
