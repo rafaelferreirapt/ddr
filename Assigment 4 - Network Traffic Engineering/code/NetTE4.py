@@ -80,17 +80,17 @@ for i in range(0, 10000):
         path = sol[pair]
         ws_delay[pair] = 0
         for i in range(0, len(path) - 1):
-            ws_delay[pair] += net[path[i]][path[i + 1]]['delay']
+            ws_delay[pair] += net_tmp[path[i]][path[i + 1]]['delay']
 
     tmp_stats = listStats(ws_delay)
 
     # best solution
     if liststats_result is None or liststats_result[1] > tmp_stats[1]:
         allpairs_best = allpairs
-        sol_best = sol
-        ws_delay_best = ws_delay
+        sol_best = sol.copy()
+        ws_delay_best = ws_delay.copy()
         liststats_result = tmp_stats
-        net_best = net_tmp
+        net_best = net_tmp.copy()
 
 print('---')
 print('Solution:' + str(sol_best))

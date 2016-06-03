@@ -52,68 +52,68 @@ for link in links:
 nx.draw(net, pos, with_labels=True)
 # plt.show()
 
-allpairs = list(itertools.permutations(nodes, 2))
-sol = {}
-
-ws_delay = {}
-
-for pair in allpairs:
-    path = nx.shortest_path(net, pair[0], pair[1], weight='delay')
-    sol.update({pair: path})
-
-    for i in range(0, len(path) - 1):
-        net[path[i]][path[i + 1]]['load'] += tm[pair[0]][pair[1]]
-        net[path[i]][path[i + 1]]['delay'] = 1e6 / (mu - net[path[i]][path[i + 1]]['load'])
-        # imprescendivel por causa do weight delay
-
-for pair in allpairs:
-    path = sol[pair]
-    ws_delay[pair] = 0
-    for i in range(0, len(path) - 1):
-        ws_delay[pair] += net[path[i]][path[i + 1]]['delay']
-
-"""
-Local Search SOLUTION
-"""
 sol_local = {}
 ws_delay_local = {}
-liststats_result_local = None
+liststats_local = None
 net_local = nx.DiGraph()
 
-for pair in allpairs:
-    sol_tmp = sol.copy()
+for k in range(0, 100):
     net_tmp = net.copy()
+    allpairs = list(itertools.permutations(nodes, 2))
+
+    sol = {}
 
     ws_delay = {}
 
-    path = sol_tmp[pair]
-    del sol_tmp[pair]
+    random.shuffle(allpairs)
 
-    for i in range(0, len(path) - 1):
-        net_tmp[path[i]][path[i + 1]]['load'] -= tm[pair[0]][pair[1]]
-        net_tmp[path[i]][path[i + 1]]['delay'] = 1e6 / (mu - net_tmp[path[i]][path[i + 1]]['load'])
+    for pair in allpairs:
+        path = nx.shortest_path(net_tmp, pair[0], pair[1], weight='delay')
+        sol.update({pair: path})
 
-    path = nx.shortest_path(net_tmp, pair[0], pair[1], weight='delay')
-    sol_tmp.update({pair: path})
-
-    for i in range(0, len(path) - 1):
-        net_tmp[path[i]][path[i + 1]]['load'] += tm[pair[0]][pair[1]]
-        net_tmp[path[i]][path[i + 1]]['delay'] = 1e6 / (mu - net_tmp[path[i]][path[i + 1]]['load'])
-
-    for p in allpairs:
-        path = sol_tmp[p]
-        ws_delay[p] = 0
         for i in range(0, len(path) - 1):
-            ws_delay[p] += net_tmp[path[i]][path[i + 1]]['delay']
+            net_tmp[path[i]][path[i + 1]]['load'] += tm[pair[0]][pair[1]]
+            net_tmp[path[i]][path[i + 1]]['delay'] = 1e6 / (mu - net_tmp[path[i]][path[i + 1]]['load'])
+            # imprescendivel por causa do weight delay
 
-    tmp_stats = listStats(ws_delay)
+    """
+    Local Search
+    """
+    for pair in allpairs:
+        sol_tmp = sol.copy()
+        net_tmp_local = net_tmp.copy()
 
-    # best solution
-    if liststats_result_local is None or liststats_result_local[1] > tmp_stats[1]:
-        sol_local = sol_tmp.copy()
-        ws_delay_local = ws_delay.copy()
-        liststats_result_local = tmp_stats
-        net_local = net_tmp.copy()
+        ws_delay = {}
+
+        path = sol_tmp[pair]
+        del sol_tmp[pair]
+
+        for i in range(0, len(path) - 1):
+            net_tmp_local[path[i]][path[i + 1]]['load'] -= tm[pair[0]][pair[1]]
+            net_tmp_local[path[i]][path[i + 1]]['delay'] = 1e6 / (mu - net_tmp_local[path[i]][path[i + 1]]['load'])
+
+        path = nx.shortest_path(net_tmp_local, pair[0], pair[1], weight='delay')
+        sol_tmp.update({pair: path})
+
+        for i in range(0, len(path) - 1):
+            net_tmp_local[path[i]][path[i + 1]]['load'] += tm[pair[0]][pair[1]]
+            net_tmp_local[path[i]][path[i + 1]]['delay'] = 1e6 / (mu - net_tmp_local[path[i]][path[i + 1]]['load'])
+
+        for p in allpairs:
+            path = sol_tmp[p]
+            ws_delay[p] = 0
+            for i in range(0, len(path) - 1):
+                ws_delay[p] += net_tmp_local[path[i]][path[i + 1]]['delay']
+
+        tmp_stats = listStats(ws_delay)
+
+        # best solution
+        if liststats_local is None or liststats_local[1] > tmp_stats[1]:
+            sol_local = sol_tmp.copy()
+            ws_delay_local = ws_delay.copy()
+            liststats_local = tmp_stats
+            net_local = net_tmp_local.copy()
+
 
 print('---')
 print('Solution:' + str(sol_local))
@@ -140,6 +140,3 @@ for link in links:
 meanLoad, maxLoad, maxLoadK = listStats(delayAll)
 print('\n\nMean one-way delay: %f micro seg\nMaximum one-way delay: %f micro seg'
       '\nflow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
-
-
-# explicar no relatorio o algoritmo fluxograma
