@@ -67,8 +67,9 @@ for pair in allpairs:
 
 for pair in allpairs:
     path = sol[pair]
+    ws_delay[pair] = 0
     for i in range(0, len(path) - 1):
-        ws_delay[pair] = net[path[i]][path[i + 1]]['delay']
+        ws_delay[pair] += net[path[i]][path[i + 1]]['delay']
 
 print('---')
 print('Solution:' + str(sol))

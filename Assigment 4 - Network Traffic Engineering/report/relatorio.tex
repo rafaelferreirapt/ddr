@@ -111,6 +111,12 @@ Analisando a tabela obtida conseguimos perceber que o link Aveiro-Porto tem o m�
 
 \input{./tables/smallnet_netTE1_stats2.tex}
 
+Para a rede grande, obteve-se o máximo delay de 16.25 micro segundos e a carga máxima de Aveiro-Porto com 63497 pacotes/ segundo.
+
+\input{./tables/network_netTE1_stats1.tex}
+
+\input{./tables/network_netTE1_stats2.tex}
+
 \newpage
 
 \section{Exercício 5, 6 e 7}
@@ -148,10 +154,19 @@ Na diferença de Porto > Lisboa, temos Porto > Aveiro (0)  + Aveiro > Lisboa (31
 
 \input{./tables/smallnet_netTE2_stats2.tex}
 
-Com este exercício, mudando o critério para carga nos links na escolha do caminho mais curto, conseguimos melhorias no "maximum one-way delay" (-0,083 microseg) de  e no "maximum one-way load" (-319 pkts\/sec). 
+Com este exercício, mudando o critério para carga nos links na escolha do caminho mais curto, conseguimos melhorias no "maximum one-way delay" de (-0,083 microseg)   e no "maximum one-way load" (-319 pkts/sec). 
 
 %16.1420500404-16.0593553775=0,0826946629 micro sec
 %63050.00-62731.00=319 pkts/sec
+
+Já para a rede grande, dado que o critério agora é a carga, as mudanças são superiores ao exercício anterior, conseguindo-se melhorias no "maximum one-way delay" de (-5.109 microseg)   e no "maximum one-way load" (-28182 pkts/sec).  
+
+%16.2593694617-11.1501365892=5.1092328725 micro sec
+%63497.00-35315.00=28182 pkts/sec
+
+\input{./tables/network_netTE2_stats1.tex}
+
+\input{./tables/network_netTE2_stats2.tex}
 
 \section{Exercício 8, 9 e 10}
 
@@ -166,8 +181,6 @@ net[path[i]][path[i + 1]]['delay'] = 1e6 /
 	(mu - net[path[i]][path[i + 1]]['load'])
 \end{lstlisting}
 
-\newpage
-
 O critério agora é o atraso, e para calcular o atraso usou-se a aproximação M/M/1.
 
 Para a rede pequena o resultado obtido foi:
@@ -176,19 +189,36 @@ Para a rede pequena o resultado obtido foi:
 
 Nesta tabela em relação ao exercício anterior não houve mudanças, isto devido à ordem ser a mesma de atribuição.
 
+\newpage
+
 \input{./tables/smallnet_netTE3_stats1.tex}
 
 \input{./tables/smallnet_netTE3_stats2.tex}
 
 Como se pode observar, para a rede pequena manteve-se igual.
 
+Já para a rede grande, neste caso, não existiu melhorias, no "maximum one-way delay" de (+0,011 microseg)   e no "maximum one-way load" (+88 pkts/sec).  
+
+%11.1501365892-11.1610879829=+0,0109513937 micro sec
+%35315.00-35403.00=+88 pkts/sec
+
 \input{./tables/network_netTE3_stats1.tex}
 
 \input{./tables/network_netTE3_stats2.tex}
 
+\section{Exercício 11 e 12}
+
+No exercício 11 e 12, foi pedido que usando um método que aleatoriamente trocasse os elementos de uma lista e fazendo isto para um número de vezes finito, de forma a obter sempre os melhores resultados tendo em conta o atraso. Para isto, foi usado o código do exercício anterior, adicionado um for para iterar e mais umas pequenas mudanças.
+
+Para a rede pequena o resultado obtido foi:
+
+\input{./tables/smallnet_netTE4.tex}
+
 
 
 \newpage
+
+
 
 \end{document}
 

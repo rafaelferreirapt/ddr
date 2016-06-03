@@ -65,8 +65,9 @@ for pair in allpairs:
 
 for pair in allpairs:
     path = sol[pair]
+    ws_delay[pair] = 0
     for i in range(0, len(path) - 1):
-        ws_delay[pair] = 1e6 / (mu - net[path[i]][path[i + 1]]['load'])
+        ws_delay[pair] += 1e6 / (mu - net[path[i]][path[i + 1]]['load'])
 
 print('---')
 print('Solution:' + str(sol))

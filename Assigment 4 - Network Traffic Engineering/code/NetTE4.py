@@ -78,8 +78,9 @@ for i in range(0, 10000):
 
     for pair in allpairs:
         path = sol[pair]
+        ws_delay[pair] = 0
         for i in range(0, len(path) - 1):
-            ws_delay[pair] = net[path[i]][path[i + 1]]['delay']
+            ws_delay[pair] += net[path[i]][path[i + 1]]['delay']
 
     tmp_stats = listStats(ws_delay)
 
