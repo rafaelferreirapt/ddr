@@ -135,11 +135,11 @@ print('---')
 loadAll = {}
 
 for link in links:
-    print("#link %s-%s: %d pkts/sec" % (link[0], link[1], net[link[0]][link[1]]['load']))
-    print("#link %s-%s: %d pkts/sec" % (link[1], link[0], net[link[1]][link[0]]['load']))
+    print("#link %s-%s: %d pkts/sec" % (link[0], link[1], net_best[link[0]][link[1]]['load']))
+    print("#link %s-%s: %d pkts/sec" % (link[1], link[0], net_best[link[1]][link[0]]['load']))
 
-    loadAll.update({(link[0], link[1]): net[link[0]][link[1]]['load']})
-    loadAll.update({(link[1], link[0]): net[link[1]][link[0]]['load']})
+    loadAll.update({(link[0], link[1]): net_best[link[0]][link[1]]['load']})
+    loadAll.update({(link[1], link[0]): net_best[link[1]][link[0]]['load']})
 
 meanLoad, maxLoad, maxLoadK = listStats(loadAll)
 print('\n\nMean one-way load: %.2f pkts/sec\nMaximum one-way load: %.2f pkts/sec'

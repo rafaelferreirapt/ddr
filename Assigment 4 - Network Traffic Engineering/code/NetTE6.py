@@ -57,7 +57,7 @@ ws_delay_local = {}
 liststats_local = None
 net_local = nx.DiGraph()
 
-for k in range(0, 100):
+for k in range(0, 10000):
     net_tmp = net.copy()
     allpairs = list(itertools.permutations(nodes, 2))
 
@@ -118,25 +118,62 @@ for k in range(0, 100):
 print('---')
 print('Solution:' + str(sol_local))
 
+# export to tex
+table = []
+
+for key, value in sol_local.items():
+    table += [OrderedDict([
+        ("Origem", key[0]),
+        ("Destino", key[1]),
+        ("Saltos", ", ".join(value)),
+        ("Carga (pkts/sec)", net_local[key[0]][key[1]]['load'] if key[0] in net_local and key[1] in net_local[key[0]] else "Indisponível"),
+        ("Atraso (micro/sec)", ("%0.2f" % ws_delay_local[(key[0], key[1])]))
+    ])]
+
+t = JsonToLatex(table, title="Solução obtida, carga nos links e atraso")
+t.convert()
+t.save("../report/tables/" + filename.replace(".dat", "_") + "netTE6.tex")
+# export to tex
+
 print('---')
 for pair in allpairs:
     print("#flow %s-%s: %2.2f micro sec" % (pair[0], pair[1], ws_delay_local[(pair[0], pair[1])]))
 
 meanWs, maxWs, maxWsK = listStats(ws_delay_local)
 print('\n\nMean one-way delay: %.2f micro seg\nMaximum one-way delay: %.2f micro seg'
-      '\nflow %s-%s' % (meanWs, maxWs, maxWsK[0], maxWsK[1]))
+      '\nMaximum one-way delay flow %s-%s' % (meanWs, maxWs, maxWsK[0], maxWsK[1]))
+
+# export to tex
+table_stats1 = [OrderedDict({"Mean one-way delay": meanWs,
+                             "Maximum one-way delay": maxWs,
+                             "Maximum one-way delay flow": "%s-%s" % (maxWsK[0], maxWsK[1])})]
+
+t = JsonToLatex(table_stats1, title="Atraso")
+t.convert()
+t.save("../report/tables/" + filename.replace(".dat", "_") + "netTE6_stats1.tex")
+# export to tex
 
 print('---')
 
-delayAll = {}
+loadAll = {}
 
 for link in links:
-    print("#link %s-%s: %f micro seg" % (link[0], link[1], net_local[link[0]][link[1]]['delay']))
-    print("#link %s-%s: %f micro seg" % (link[1], link[0], net_local[link[1]][link[0]]['delay']))
+    print("#link %s-%s: %d pkts/sec" % (link[0], link[1], net_local[link[0]][link[1]]['load']))
+    print("#link %s-%s: %d pkts/sec" % (link[1], link[0], net_local[link[1]][link[0]]['load']))
 
-    delayAll.update({(link[0], link[1]): net_local[link[0]][link[1]]['delay']})
-    delayAll.update({(link[1], link[0]): net_local[link[1]][link[0]]['delay']})
+    loadAll.update({(link[0], link[1]): net_local[link[0]][link[1]]['load']})
+    loadAll.update({(link[1], link[0]): net_local[link[1]][link[0]]['load']})
 
-meanLoad, maxLoad, maxLoadK = listStats(delayAll)
-print('\n\nMean one-way delay: %f micro seg\nMaximum one-way delay: %f micro seg'
-      '\nflow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
+meanLoad, maxLoad, maxLoadK = listStats(loadAll)
+print('\n\nMean one-way load: %.2f pkts/sec\nMaximum one-way load: %.2f pkts/sec'
+      '\nMax load flow %s-%s' % (meanLoad, maxLoad, maxLoadK[0], maxLoadK[1]))
+
+# export to tex
+table_stats2 = [OrderedDict({"Mean one-way load": "%.2f pkts/sec" % meanLoad,
+                             "Maximum one-way load": "%.2f pkts/sec" % maxLoad,
+                             "Max load flow": "%s-%s" % (maxLoadK[0], maxLoadK[1])})]
+
+t = JsonToLatex(table_stats2, title="Carga")
+t.convert()
+t.save("../report/tables/" + filename.replace(".dat", "_") + "netTE6_stats2.tex")
+# export to tex
