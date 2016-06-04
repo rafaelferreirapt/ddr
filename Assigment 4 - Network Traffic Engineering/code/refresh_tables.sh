@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -x
-N=${1:-5}
+N=${1:-6}
 
 source ../virtualenv/bin/activate
 for (( c=1; c<=${N}; c++ ))
