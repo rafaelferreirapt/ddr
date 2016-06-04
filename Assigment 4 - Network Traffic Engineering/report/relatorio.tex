@@ -154,14 +154,14 @@ Na diferença de Porto > Lisboa, temos Porto > Aveiro (0)  + Aveiro > Lisboa (31
 
 \input{./tables/smallnet_netTE2_stats2.tex}
 
-Com este exercício, mudando o critério para carga nos links na escolha do caminho mais curto, para a rede pequena, conseguiu-se melhorias no "maximum one-way delay" de -0,108 micro segundos, no atraso médio de -0,0012 micro segundos, no "maximum one-way load" de -319 pkts/sec e a carga média manteve-se como esperado.
+Com este exercício, mudando o critério para carga nos links na escolha do caminho mais curto, para a rede pequena, conseguiu-se melhorias no "maximum one-way delay" de -0,102 micro segundos, no atraso médio de -0,0012 micro segundos, no "maximum one-way load" de -319 pkts/sec e a carga média manteve-se como esperado.
 
 Dado que agora o pretendido era querer-se melhorias em termos de carga, estas foram obtidas para a rede pequena.
 
-%32.1869758326-32.0852532284=0,1017226042 micro sec
+%Maximum one-way delay delay: 32.1869758326-32.0852532284=0,1017226042 micro sec
+%Mean one-way delay: 16.010093405-16.0089473288=0,0011460762 micro sec
 %63050.00-62731.00=319 pkts/sec
-%16.010093405-16.0089473288=0,0011460762 micro sec
-%43797.40 = 
+%43797.40 = 0
 \newpage
 
 Para a rede grande, obteve-se o máximo delay de 80.19 micro segundos para o caminho entre Valencia e Badajoz, o que significa uma melhoria de 3,42 micro segundos, já atraso médio de desceu 1,80 micro segundos em relação ao exercício anterior, e obteve-se a carga máxima de Aveiro-Porto com 35315 pacotes/ segundo (melhoria de 28182 pacotes/segundo)  e a carga média de 23310.10 pacotes/segundo (melhoria de 575,1 pacotes/segundo).
@@ -206,10 +206,10 @@ Como se pode observar, para a rede pequena manteve-se igual.
 
 Já para a rede grande, como o critério agora é o atraso, espera-se que se tenha obtido melhorias, comparando com o exercício anterior, existiu melhorias, no máximo delay de 0,97 micro segundos para o mesmo caminho do exercício anterior, já o atraso médio desceu também 0,72 micro segundos e obteve-se a carga máxima também de Aveiro ao Porto, piorando em +88 pacotes por segundo sendo que a carga média diminuiu em 557,67 pacotes/segundo.
 
-% 80.1875239088-79.2209331482=0,9665907606
-% 28.6383060926-27.922949817=0,7153562756
-% 35315-35403
-% 23310.48-22752.81=557,67
+% Maximum one-way delay: 80.1875239088-79.2209331482=0,9665907606
+% Mean one-way delay: 28.6383060926-27.922949817=0,7153562756
+% Maximum one-way load: 35315-35403
+% Mean one-way load: 23310.48-22752.81=557,67
 
 \input{./tables/network_netTE3_stats1.tex}
 
@@ -219,6 +219,33 @@ Já para a rede grande, como o critério agora é o atraso, espera-se que se ten
 
 No exercício 11 e 12, foi pedido que usando um método que aleatoriamente trocasse os elementos de uma lista e fazendo isto para um número de vezes finito, de forma a obter sempre os melhores resultados tendo em conta o atraso. Para isto, foi usado o código do exercício anterior, adicionado um for para iterar e mais umas pequenas mudanças.
 
+\begin{lstlisting}[language=python]
+# antes de iterar e preciso declarar os dicionarios, 
+# listas e rede melhores
+allpairs_best = []
+sol_best = {}
+ws_delay_best = {}
+liststats_result = None
+net_best = nx.DiGraph()
+
+# iterar 10000x
+for i in range(0, 10000):
+	... # igual ao exercicio anterior
+	
+	# ver se e a melhor solucao
+	tmp_stats = listStats(ws_delay)
+
+    # best solution
+    if liststats_result is None or 
+    		liststats_result[0] > tmp_stats[0]:
+        allpairs_best = allpairs
+        sol_best = sol.copy()
+        ws_delay_best = ws_delay.copy()
+        liststats_result = tmp_stats
+        net_best = net_tmp.copy()
+\end{lstlisting}
+
+\newpage
 Para a rede pequena o resultado obtido foi:
 
 \input{./tables/smallnet_netTE4.tex}
@@ -229,8 +256,109 @@ Em relação aos exercícios anteriores, esta solução é diferente. Dado que a
 
 \input{./tables/smallnet_netTE4_stats2.tex}
 
+Analisando os resultados obtidos, em relação ao exercício anterior, conseguiu-se uma melhoria no atraso médio de -0,012 micro segundos. Para os restantes parâmetros, os resultados foram iguais.
 
-\newpage
+% maximum one-way delay: 32.0852532284-32.0852532284=0 micro segundos
+% mean one-way delay: 16.0089473288-15.9968868727=0,012 micro segundos
+% maximum one-way load: 62731-62731=0 pacotes/segundo
+% mean one-way load: 43797.40-43797.40=0 pacotes/segundo
+
+\input{./tables/network_netTE4_stats1.tex}
+
+\input{./tables/network_netTE4_stats2.tex}
+
+% maximum one-way delay: 79.2209331482-60.0122049529=19,21 micro segundos
+% mean one-way delay: 27.922949817-26.934401214=0,99 micro segundos
+% maximum one-way load:  35403.00-30905.00=4498 pacotes/segundo
+% mean one-way load: 22752.81-22172.22=580,59 pacotes/segundo
+
+As melhorias também apareceram na rede grande, como agora se fez muitas repetições e pretende-se melhorar o atraso médio, comparando com o exercício anterior, existiu melhorias, no máximo delay de 19,21 micro segundos para o mesmo caminho do exercício anterior, já o atraso médio desceu também 0,99 micro segundos e obteve-se a carga máxima também de Aveiro ao Porto, melhorando em -4498 pacotes por segundo, sendo que a carga média diminuiu também em 580,59 pacotes/segundo.
+
+\section{Exercício 13}
+
+Neste exercício, é pedido que se implemente um algoritmo de procura local de forma a obter a melhor solução minimizando o atraso médio da rede.
+
+Pretende-se que usando o código desenvolvido anteriormente se encontre uma solução inicial que depois será usada pelo algoritmo de procura local para encontrar uma melhor solução, sempre que essa solução encontrada for melhor do que a solução melhor atual esta será substituída pela nova solução.
+
+Portanto o código inicial é igual ao do exercício 8, depois é guardada esta solução que será usada como referência pelo algoritmo de procura local. 
+
+\begin{lstlisting}[language=python]
+...
+
+# antes de iterar e preciso declarar os dicionarios, 
+# listas e rede melhores encontradas
+allpairs_best = []
+sol_best = {}
+ws_delay_best = {}
+liststats_result = None
+net_best = nx.DiGraph()
+
+# iterar pela lista de pares
+for pair in allpairs:
+	# copiar a solucao e a net encontrada anteriormente
+	sol_tmp = sol.copy()
+    net_tmp = net.copy()
+    
+    # coloca-se o dicionario do atraso vazio
+    ws_delay = {}
+	
+	# caminho para o par selecionado
+    path = sol_tmp[pair]
+    # apagar da solucao o par selecionado
+    del sol_tmp[pair]
+    
+    # para o caminho para o par selecionado
+    for i in range(0, len(path) - 1):
+    	# remover a carga
+        net_tmp[path[i]][path[i + 1]]['load'] -= tm[pair[0]][pair[1]]
+        # recalcular o atraso
+        net_tmp[path[i]][path[i + 1]]['delay'] = 1e6 / (mu - \
+        	net_tmp[path[i]][path[i + 1]]['load'])
+		
+	# faz-se a procura do caminho mais pequeno de novo
+    	path = nx.shortest_path(net_tmp, pair[0], pair[1],
+    					 weight='delay')
+    	# grava-se esse caminho na nova solucao
+    	sol_tmp.update({pair: path})		
+    	
+    	....
+    	# repoe-se a carga para o caminho novo encontrado
+    	# recalcula-se o atraso
+    	
+    	# calula-se os atrasos (ws_delay)
+    	
+    	# verifica-se se e a melhor solucao e se sim, substitui-se
+\end{lstlisting}
+
+Para a rede pequena o resultado obtido foi:
+
+\input{./tables/smallnet_netTE5.tex}
+
+\input{./tables/smallnet_netTE5_stats1.tex}
+
+\input{./tables/smallnet_netTE5_stats2.tex}
+
+Analisando os resultados obtidos, em relação ao exercício anterior, conseguiu-se uma melhoria no atraso médio de -0,012 micro segundos. Para os restantes parâmetros, os resultados foram iguais.
+
+% maximum one-way delay: 32.0852532284-32.0852532284=0 micro segundos
+% mean one-way delay: 16.0089473288-15.9968868727=0,012 micro segundos
+% maximum one-way load: 62731-62731=0 pacotes/segundo
+% mean one-way load: 43797.40-43797.40=0 pacotes/segundo
+
+Já para a rede grande, como o critério agora é o atraso, espera-se que se tenha obtido melhorias, comparando com o exercício anterior, existiu melhorias, no máximo delay de 0,97 micro segundos para o mesmo caminho do exercício anterior, já o atraso médio desceu também 0,72 micro segundos e obteve-se a carga máxima também de Aveiro ao Porto, piorando em +88 pacotes por segundo sendo que a carga média diminuiu em 557,67 pacotes/segundo.
+
+% Maximum one-way delay: 80.1875239088-79.2209331482=0,9665907606
+% Mean one-way delay: 28.6383060926-27.922949817=0,7153562756
+% Maximum one-way load: 35315-35403
+% Mean one-way load: 23310.48-22752.81=557,67
+
+\input{./tables/network_netTE5_stats1.tex}
+
+\input{./tables/network_netTE5_stats2.tex}
+
+
+
+\section{Exercício 14}
 
 
 
