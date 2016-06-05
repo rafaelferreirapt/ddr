@@ -108,7 +108,7 @@ for k in range(0, 10000):
         tmp_stats = listStats(ws_delay)
 
         # best solution
-        if liststats_local is None or liststats_local[1] > tmp_stats[1]:
+        if liststats_local is None or liststats_local[0] > tmp_stats[0]:
             sol_local = sol_tmp.copy()
             ws_delay_local = ws_delay.copy()
             liststats_local = tmp_stats

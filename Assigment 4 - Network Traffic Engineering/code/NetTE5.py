@@ -109,7 +109,7 @@ for pair in allpairs:
     tmp_stats = listStats(ws_delay)
 
     # best solution
-    if liststats_result_local is None or liststats_result_local[1] > tmp_stats[1]:
+    if liststats_result_local is None or liststats_result_local[0] > tmp_stats[0]:
         sol_local = sol_tmp.copy()
         ws_delay_local = ws_delay.copy()
         liststats_result_local = tmp_stats
