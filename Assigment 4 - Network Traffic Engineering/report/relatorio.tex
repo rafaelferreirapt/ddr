@@ -338,10 +338,10 @@ Para a rede pequena o resultado obtido foi:
 
 \input{./tables/smallnet_netTE5_stats2.tex}
 
-Analisando os resultados obtidos, em relação ao exercício anterior, piorou em +0,012 micro segundos, mas isso deve-se pelo facto de o exercício anterior fazer todas as combinações possíveis, e neste, não são experimentadas todas as combinações possíveis. Para os restantes parâmetros, os resultados foram iguais.
+Analisando os resultados obtidos, em relação ao exercício anterior, mantiveram-se todos os resultados.
 
 % maximum one-way delay: 32.0852532284-32.0852532284=0 micro segundos
-% mean one-way delay: 15.9968868727-16.0089473288=-0,0120604561 micro segundos
+% mean one-way delay: 15.9968868727-15.9968868727=-0 micro segundos
 % maximum one-way load: 62731-62731=0 pacotes/segundo
 % mean one-way load: 43797.40-43797.40=0 pacotes/segundo
 
@@ -351,8 +351,32 @@ Já para a rede grande, neste exercício piorou em todos os resultados em relaç
 
 \input{./tables/network_netTE5_stats2.tex}
 
+\newpage
+
 \section{Exercício 14}
 
+Para este exercício, pretende-se fazer 10 mil repetições do exercício anterior, fazendo-se permutações da lista de pares tal como o exercício 8, 9 e 10 e fazendo também procura local como o exercício anterior, procurando sempre a melhor solução.
+
+Para a rede pequena o resultado obtido foi:
+
+\input{./tables/smallnet_netTE6.tex}
+
+\input{./tables/smallnet_netTE6_stats1.tex}
+
+\input{./tables/smallnet_netTE6_stats2.tex}
+
+Analisando os resultados obtidos, em relação ao exercício anterior, mantiveram-se todos os resultados.
+
+% maximum one-way delay: 60.0122049529-60.1357390951= ++ 0,1235341422 micro segundos
+% mean one-way delay: 26.934401214-26.8627989428=--0,0716022712 micro segundos
+% maximum one-way load: 30905.00-33893.00=++2988 pacotes/segundo
+% mean one-way load: 22172.22-22091.29=--80,93 pacotes/segundo
+
+Já para a rede grande, em comparação com o exercício 11 e 12, piorou o atraso máximo em 0.124 micro segundos e a carga máxima em 2988 pacotes/segundo. Já o atraso médio e a carga média foi a melhor conseguido entre todos os exercícios, em comparação também, foi uma melhoria 0.072 micro segundos e para a carga média de 80,93 pacotes/segundos.
+
+\input{./tables/network_netTE6_stats1.tex}
+
+\input{./tables/network_netTE6_stats2.tex}
 
 
 \end{document}
